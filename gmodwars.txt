@@ -1,0 +1,7 @@
+"gmodwars"
+{
+	"base" 			"sandbox"
+	"title"			"Gmod Wars"
+	"author" 		"Reece™"
+	"menusystem"	"1"
+}

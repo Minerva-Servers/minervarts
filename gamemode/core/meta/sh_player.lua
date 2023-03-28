@@ -1,0 +1,1 @@
+local META = FindMetaTable("Player")
