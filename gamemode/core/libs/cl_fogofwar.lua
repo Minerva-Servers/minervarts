@@ -1,0 +1,1 @@
+gmodwars.fogOfWar = gmodwars.fogOfWar or {}
