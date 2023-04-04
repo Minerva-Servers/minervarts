@@ -6,11 +6,11 @@ function GM:CalcView(ply, pos, angles, fov)
 
     // Set the player's view to a top-down perspective
     local view = {}
-    view.origin = Vector(pos.x, pos.y, Lerp(0.1, pos.z, pos.z))
+    view.origin = Vector(pos.x, pos.y, pos.z)
     view.angles = Angle(60, 130, 0)
     view.fov = fov
-    view.znear = 100
-    view.zfar = 2200
+    view.znear = 10
+    view.zfar = 3000
 
     return view
 end
