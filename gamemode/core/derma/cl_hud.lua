@@ -36,7 +36,7 @@ function PANEL:Init()
     // populate abilities grid with buttons
     for i = 1, 16 do
         local button = grid:Add("DButton")
-        button:SetText(tostring(i))
+        button:SetText(string.char(64 + i))
         button:SetSize(abilitiesButtonScale, abilitiesButtonScale)
         button.Paint = function(self, w, h)
             // draw button background
