@@ -1,10 +1,18 @@
 function GM:PlayerInitialSpawn(ply)
     ply:KillSilent()
 
+    // Randomly assign a faction to the player
+    if ( math.random(2) == 1 ) then
+        ply:SetTeam(FACTION_REBELS)
+    else
+        ply:SetTeam(FACTION_COMBINE)
+    end
+
     timer.Simple(10, function()
         ply:Respawn()
     end)
 end
+
 
 function GM:PlayerSpawn(ply)
     local spawnPos = table.Random(ents.FindByClass("info_player_start")):GetPos()
