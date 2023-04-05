@@ -27,7 +27,21 @@ function minerva.buildings.Register(buildingData)
 end
 
 if ( SERVER ) then
-    function minerva.buildings.Create(buildingIndex, callback)
+    function minerva.buildings.Create(uniqueID, callback)
+        local buildingIndex
+    
+        for index, building in ipairs(minerva.buildings.GetAll()) do
+            if ( building.uniqueID == uniqueID ) then
+                buildingIndex = index
+                break
+            end
+        end
+    
+        if not ( buildingIndex ) then
+            error("Building with uniqueID "..uniqueID.." does not exist!")
+            return
+        end
+
         local buildingTable = minerva.buildings.Get(buildingIndex)
 
         local building = ents.Create("minervawars_building")
