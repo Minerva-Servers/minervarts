@@ -1,5 +1,5 @@
 local zoomDistance = zoomDistance or 0
-local zoomSpeed = zoomSpeed or 25
+local zoomSpeed = 25
 function GM:PlayerButtonDown(ply, key)
     if ( key == MOUSE_WHEEL_DOWN ) then
         zoomDistance = zoomDistance - zoomSpeed
@@ -51,7 +51,7 @@ function GM:Move(ply, mv)
         mask = MASK_PLAYERSOLID_BRUSHONLY,
     })
 
-    pos.z = Lerp(0.06, pos.z, trace2.HitPos.z + 500 - zoomDistance * 5)
+    pos.z = Lerp(0.06, pos.z, trace2.HitPos.z + 800 - zoomDistance * 5)
 
     if ( pos.z < -1000 ) then
         pos = Vector(0, 0, 100)
