@@ -24,9 +24,9 @@ function PANEL:Init()
     self.abilitiesPanel = self:Add("DPanel")
     self.abilitiesPanel:SetPos(0, self:GetTall() - abilitiesScale)
     self.abilitiesPanel:SetSize(abilitiesScale, abilitiesScale)
-    self.abilitiesPanel.Paint = function(self, w, h)
+    self.abilitiesPanel.Paint = function(this, width, height)
         // draw abilities panel background
-        draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
+        draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
     end
     
     // abilities grid
@@ -40,9 +40,9 @@ function PANEL:Init()
         local button = self.abilitiesGrid:Add("DButton")
         button:SetText(string.char(64 + i))
         button:SetSize(abilitiesButtonScale, abilitiesButtonScale)
-        button.Paint = function(self, w, h)
+        button.Paint = function(this, width, height)
             // draw button background
-            draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
+            draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
         end
 
         self.abilitiesGrid:AddItem(button)
@@ -54,18 +54,18 @@ function PANEL:Init()
     local minimap = self:Add("DPanel")
     minimap:SetPos(self:GetWide() - minimapScale, self:GetTall() - minimapScale)
     minimap:SetSize(minimapScale, minimapScale)
-    minimap.Paint = function(self, w, h)
+    minimap.Paint = function(this, width, height)
         // draw minimap background
-        draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
+        draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
     end
 
     // selected units/buildings panel
     local selected = self:Add("DScrollPanel")
     selected:SetPos(abilitiesScale + padding, self:GetTall() - selectedScale)
     selected:SetSize(self:GetWide() - padding * 2 - minimap:GetWide() - abilitiesScale, selectedScale)
-    selected.Paint = function(self, w, h)
+    selected.Paint = function(this, width, height)
         // draw selected units/buildings panel background
-        draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
+        draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
     end
     
     // selected units/buildings grid
@@ -81,9 +81,9 @@ function PANEL:Init()
         button:SetModel("models/kleiner.mdl")
         button:SetSize(selectedButtonScale, selectedButtonScale)
         button:SetTooltip("Kleiner Unit")
-        button.Paint = function(self, w, h)
+        button.Paint = function(this, width, height)
             // draw button background
-            draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
+            draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
         end
 
         grid:AddItem(button)
@@ -92,10 +92,10 @@ function PANEL:Init()
     // selection circle
     self.circle = self:Add("DPanel")
     self.circle:SetSize(64, 64)
-    self.circle.Paint = function(self, w, h)
+    self.circle.Paint = function(this, width, height)
         draw.SimpleTextOutlined("Selected", "DermaDefault", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
         surface.SetDrawColor(255, 255, 255, 100)
-        surface.DrawOutlinedRect(0, 0, w, h)
+        surface.DrawOutlinedRect(0, 0, width, height)
     end
     self.circle:SetVisible(false)
 end
