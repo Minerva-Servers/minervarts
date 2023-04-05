@@ -1,5 +1,5 @@
-gmodwars.units = gmodwars.units or {}
-gmodwars.units.stored = {}
+minerva.units = minerva.units or {}
+minerva.units.stored = {}
 
 local CITIZEN_MODELS = {
     "models/humans/group01/male_01.mdl",
@@ -26,15 +26,15 @@ local CITIZEN_MODELS = {
     "models/humans/group01/female_04.mdl"
 }
 
-function gmodwars.units.Get(unitIndex)
-    return gmodwars.units.stored[unitIndex]
+function minerva.units.Get(unitIndex)
+    return minerva.units.stored[unitIndex]
 end
 
-function gmodwars.units.GetAll()
-    return gmodwars.units.stored
+function minerva.units.GetAll()
+    return minerva.units.stored
 end
 
-function gmodwars.units.Register(unitData)
+function minerva.units.Register(unitData)
     if not ( unitData.name ) then
         error("No name provided for unit "..#unitData.."!")
     end
@@ -43,19 +43,19 @@ function gmodwars.units.Register(unitData)
         error("No models provided for unit "..unitData.name.."!")
     end
 
-    local unitDataIndex = #gmodwars.units.stored + 1
+    local unitDataIndex = #minerva.units.stored + 1
     unitData.index = unitDataIndex
 
-    gmodwars.units.stored[#gmodwars.units.stored + 1] = unitData
+    minerva.units.stored[#minerva.units.stored + 1] = unitData
 
     return unitDataIndex
 end
 
 if ( SERVER ) then
-    function gmodwars.units.Create(unitIndex, callback)
-        local unitTable = gmodwars.units.Get(unitIndex)
+    function minerva.units.Create(unitIndex, callback)
+        local unitTable = minerva.units.Get(unitIndex)
 
-        local unit = ents.Create("gmodwars_unit")
+        local unit = ents.Create("minervawars_unit")
         unit:SetUnitIndex(unitIndex)
         unit:Spawn()
         unit:SetModel(table.Random(unitTable.models or CITIZEN_MODELS))
@@ -66,4 +66,4 @@ if ( SERVER ) then
     end
 end
 
-gmodwars.util.IncludeDirectory("gmodwars/gamemode/units", true)
+minerva.util.IncludeDirectory("minervawars/gamemode/units", true)

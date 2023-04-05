@@ -1,7 +1,7 @@
 local PANEL = {}
 
 function PANEL:Init()
-    gmodwars.gui.hud = self
+    minerva.gui.hud = self
 
     local padding = ScreenScale(8)
     local abilitiesButtonScale = ScreenScale(24)
@@ -146,10 +146,10 @@ function PANEL:Think()
     end
 end
 
-vgui.Register("gmodwars.HUD", PANEL, "EditablePanel")
+vgui.Register("minerva.HUD", PANEL, "EditablePanel")
 
-if ( IsValid(gmodwars.gui.hud) ) then
-    gmodwars.gui.hud:Remove()
+if ( IsValid(minerva.gui.hud) ) then
+    minerva.gui.hud:Remove()
 end
 
-vgui.Create("gmodwars.HUD")
+vgui.Create("minerva.HUD")

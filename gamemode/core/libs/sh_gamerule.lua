@@ -1,21 +1,21 @@
-gmodwars.gamerules = gmodwars.gamerules or {}
-gmodwars.gamerules.stored = gmodwars.gamerules.stored or {}
+minerva.gamerules = minerva.gamerules or {}
+minerva.gamerules.stored = minerva.gamerules.stored or {}
 
-function gmodwars.gamerules.Get(gameruleIndex)
-    return gmodwars.gamerules.stored[gameruleIndex]
+function minerva.gamerules.Get(gameruleIndex)
+    return minerva.gamerules.stored[gameruleIndex]
 end
 
-function gmodwars.gamerules.GetAll()
-    return gmodwars.gamerules.stored
+function minerva.gamerules.GetAll()
+    return minerva.gamerules.stored
 end
 
-function gmodwars.gamerules.Register(gameruleData)
-    local gameruleDataIndex = #gmodwars.gamerules.stored + 1
+function minerva.gamerules.Register(gameruleData)
+    local gameruleDataIndex = #minerva.gamerules.stored + 1
     gameruleData.index = gameruleDataIndex
 
-    gmodwars.gamerules.stored[#gmodwars.gamerules.stored + 1] = gameruleData
+    minerva.gamerules.stored[#minerva.gamerules.stored + 1] = gameruleData
 
     return gameruleDataIndex
 end
 
-gmodwars.util.IncludeDirectory("gmodwars/gamemode/gamerules", true)
+minerva.util.IncludeDirectory("minervawars/gamemode/gamerules", true)

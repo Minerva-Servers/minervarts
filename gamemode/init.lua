@@ -1,6 +1,6 @@
 DeriveGamemode("sandbox")
 
-gmodwars = gmodwars or {}
+minerva = minerva or {}
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("core/sh_util.lua")

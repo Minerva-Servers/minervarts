@@ -53,4 +53,4 @@ UNIT.sounds = {
     },
 }
 
-UNIT_CITIZEN = gmodwars.units.Register(UNIT)
+UNIT_CITIZEN = minerva.units.Register(UNIT)

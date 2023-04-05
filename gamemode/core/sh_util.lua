@@ -1,6 +1,6 @@
-gmodwars.util = gmodwars.util or {}
+minerva.util = minerva.util or {}
 
-function gmodwars.util.Include(fileName, realm)
+function minerva.util.Include(fileName, realm)
 	if not ( fileName ) then
 		error("[Gmod Wars] No file name specified for including.")
 	end
@@ -22,25 +22,25 @@ function gmodwars.util.Include(fileName, realm)
 	end
 end
 
-function gmodwars.util.IncludeDirectory(directory, bFromLua)
-	local baseDir = "gmodwars/gamemode/"
+function minerva.util.IncludeDirectory(directory, bFromLua)
+	local baseDir = "minervawars/gamemode/"
 
 	for _, v in ipairs(file.Find((bFromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
-		gmodwars.util.Include(directory.."/"..v)
+		minerva.util.Include(directory.."/"..v)
 	end
 end
 
-gmodwars.util.materials = gmodwars.util.materials or {}
+minerva.util.materials = minerva.util.materials or {}
 
-function gmodwars.util.GetMaterial(mat, ...)
-	if not ( gmodwars.util.materials[mat] ) then
-		gmodwars.util.materials[mat] = Material(mat, ...)
+function minerva.util.GetMaterial(mat, ...)
+	if not ( minerva.util.materials[mat] ) then
+		minerva.util.materials[mat] = Material(mat, ...)
 	end
 
-	return gmodwars.util.materials[mat]
+	return minerva.util.materials[mat]
 end
 
-function gmodwars.util.GetPlayerByName(find, bMultiple)
+function minerva.util.GetPlayerByName(find, bMultiple)
 	bMultiple = bMultiple and true or false
 
 	local find_lower = find:lower()

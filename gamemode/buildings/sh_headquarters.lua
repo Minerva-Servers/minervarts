@@ -22,4 +22,4 @@ BUILDING.idleSequence = "idle"
 BUILDING.constructSequence = "deployed"
 BUILDING.workSequence = "work"
 
-BUILDING_REBEL_HQ = gmodwars.buildings.Register(BUILDING)
+BUILDING_REBEL_HQ = minerva.buildings.Register(BUILDING)

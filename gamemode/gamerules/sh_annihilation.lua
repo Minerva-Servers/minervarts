@@ -3,4 +3,4 @@ local GAMERULE = {}
 GAMERULE.name = "Annihilation"
 GAMERULE.description = ""
 
-GAMERULE_ANNIHILATION = gmodwars.gamerules.Register(GAMERULE)
+GAMERULE_ANNIHILATION = minerva.gamerules.Register(GAMERULE)

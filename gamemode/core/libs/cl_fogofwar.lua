@@ -1,1 +1,1 @@
-gmodwars.fogOfWar = gmodwars.fogOfWar or {}
+minerva.fogOfWar = minerva.fogOfWar or {}

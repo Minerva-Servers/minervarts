@@ -5,10 +5,10 @@ GM.Name = "Gmod Wars"
 GM.Author = "Reece™"
 GM.Description = "A light weight rts gamemode, made during my free time."
 
-gmodwars.util.IncludeDirectory("core/derma")
-gmodwars.util.IncludeDirectory("core/libs")
-gmodwars.util.IncludeDirectory("core/meta")
-gmodwars.util.IncludeDirectory("core/hooks")
+minerva.util.IncludeDirectory("core/derma")
+minerva.util.IncludeDirectory("core/libs")
+minerva.util.IncludeDirectory("core/meta")
+minerva.util.IncludeDirectory("core/hooks")
 
 function GM:Initialize()
 end

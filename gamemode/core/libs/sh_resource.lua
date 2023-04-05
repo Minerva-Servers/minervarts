@@ -1,21 +1,21 @@
-gmodwars.resources = gmodwars.resources or {}
-gmodwars.resources.stored = gmodwars.resources.stored or {}
+minerva.resources = minerva.resources or {}
+minerva.resources.stored = minerva.resources.stored or {}
 
-function gmodwars.resources.Get(name)
-    return gmodwars.resources.stored[name]
+function minerva.resources.Get(name)
+    return minerva.resources.stored[name]
 end
 
-function gmodwars.resources.GetAll()
-    return gmodwars.resources.stored
+function minerva.resources.GetAll()
+    return minerva.resources.stored
 end
 
-function gmodwars.resources.Register(resourceData)
-    local resourceDataIndex = #gmodwars.resources.stored + 1
+function minerva.resources.Register(resourceData)
+    local resourceDataIndex = #minerva.resources.stored + 1
     resourceData.index = resourceDataIndex
 
-    gmodwars.resources.stored[#gmodwars.resources.stored + 1] = resourceData
+    minerva.resources.stored[#minerva.resources.stored + 1] = resourceData
 
     return resourceDataIndex
 end
 
-gmodwars.util.IncludeDirectory("gmodwars/gamemode/resources", true)
+minerva.util.IncludeDirectory("minervawars/gamemode/resources", true)

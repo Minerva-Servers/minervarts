@@ -5,4 +5,4 @@ ABILITY.name = "Hold This Position"
 ABILITY.description = ""
 ABILITY.icon = "icon16/house.png"
 
-ABILITY_HOLD = gmodwars.abilities.Register(ABILITY)
+ABILITY_HOLD = minerva.abilities.Register(ABILITY)

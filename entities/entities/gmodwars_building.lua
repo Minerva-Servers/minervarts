@@ -26,8 +26,8 @@ function ENT:Think()
 		phys:EnableMotion(false)
 	end
 
-	local buildingData = gmodwars.buildings.Get(self:GetBuildingIndex())
-	if not ( gmodwars.buildings.Get(self:GetBuildingIndex()) ) then
+	local buildingData = minerva.buildings.Get(self:GetBuildingIndex())
+	if not ( minerva.buildings.Get(self:GetBuildingIndex()) ) then
 		return
 	end
 

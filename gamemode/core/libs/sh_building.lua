@@ -1,15 +1,15 @@
-gmodwars.buildings = gmodwars.buildings or {}
-gmodwars.buildings.stored = {}
+minerva.buildings = minerva.buildings or {}
+minerva.buildings.stored = {}
 
-function gmodwars.buildings.Get(buildingIndex)
-    return gmodwars.buildings.stored[buildingIndex]
+function minerva.buildings.Get(buildingIndex)
+    return minerva.buildings.stored[buildingIndex]
 end
 
-function gmodwars.buildings.GetAll()
-    return gmodwars.buildings.stored
+function minerva.buildings.GetAll()
+    return minerva.buildings.stored
 end
 
-function gmodwars.buildings.Register(buildingData)
+function minerva.buildings.Register(buildingData)
     if not ( buildingData.name ) then
         error("No name provided for building "..#buildingData.."!")
     end
@@ -18,19 +18,19 @@ function gmodwars.buildings.Register(buildingData)
         error("No model provided for building "..buildingData.name.."!")
     end
 
-    local buildingDataIndex = #gmodwars.buildings.stored + 1
+    local buildingDataIndex = #minerva.buildings.stored + 1
     buildingData.index = buildingDataIndex
 
-    gmodwars.buildings.stored[#gmodwars.buildings.stored + 1] = buildingData
+    minerva.buildings.stored[#minerva.buildings.stored + 1] = buildingData
 
     return buildingDataIndex
 end
 
 if ( SERVER ) then
-    function gmodwars.buildings.Create(buildingIndex, callback)
-        local buildingTable = gmodwars.buildings.Get(buildingIndex)
+    function minerva.buildings.Create(buildingIndex, callback)
+        local buildingTable = minerva.buildings.Get(buildingIndex)
 
-        local building = ents.Create("gmodwars_building")
+        local building = ents.Create("minervawars_building")
         building:Spawn()
         building:SetBuildingIndex(buildingIndex)
         building:SetModel(buildingTable.model)
@@ -43,4 +43,4 @@ if ( SERVER ) then
     end
 end
 
-gmodwars.util.IncludeDirectory("gmodwars/gamemode/buildings", true)
+minerva.util.IncludeDirectory("minervawars/gamemode/buildings", true)

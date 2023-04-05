@@ -1,7 +1,7 @@
-"gmodwars"
+"minervawars"
 {
 	"base" 			"sandbox"
-	"title"			"Gmod Wars"
+	"title"			"Minerva Wars"
 	"author" 		"Reece™"
 	"menusystem"	"1"
 }
