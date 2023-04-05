@@ -1,5 +1,6 @@
 local BUILDING = {}
 
+BUILDING.uniqueID = "building_reb_headquarters"
 BUILDING.name = "Rebel Headquarters"
 BUILDING.description = ""
 
@@ -10,11 +11,11 @@ BUILDING.health = 2000
 BUILDING.model = "models/lw_props/lw_buildings/lw_rebel_hq.mdl"
 
 BUILDING.costs = {
-    [RESOURCE_REQUISITION] = 300,
+    ["resource_requisition"] = 300,
 }
 
 BUILDING.abilities = {
-    [UNIT_CITIZEN] = true,
+    ["unit_citizen"] = true,
 }
 
 BUILDING.idleSequence = "idle"

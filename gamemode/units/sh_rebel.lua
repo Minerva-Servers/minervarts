@@ -1,5 +1,6 @@
 local UNIT = {}
 
+UNIT.uniqueID = "unit_rebel"
 UNIT.name = "Rebel"
 UNIT.description = ""
 
@@ -28,13 +29,13 @@ UNIT.models = {
 }
 
 UNIT.costs = {
-    [RESOURCE_REQUISITION] = 20,
+    ["resource_requisition"] = 20,
 }
 
 UNIT.abilities = {
-    [ABILITY_ATTACK] = true,
-    [ABILITY_HOLD] = true,
-    [ABILITY_PATROL] = true,
+    ["ability_attack"] = true,
+    ["ability_hold"] = true,
+    ["ability_patrol"] = true,
 }
 
 UNIT.sounds = {
