@@ -1,5 +1,5 @@
-local zoomDistance = 100
-local zoomSpeed = 25
+local zoomDistance = zoomDistance or 100
+local zoomSpeed = zoomSpeed or 25
 function GM:PlayerButtonDown(ply, key)
     if ( key == MOUSE_WHEEL_DOWN ) then
         zoomDistance = zoomDistance - zoomSpeed
