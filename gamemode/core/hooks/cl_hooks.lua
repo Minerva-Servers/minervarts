@@ -23,3 +23,5 @@ end
 concommand.Add("toggle_camera", function()
     cameraEnabled = not cameraEnabled
 end)
+
+gui.EnableScreenClicker(true)
