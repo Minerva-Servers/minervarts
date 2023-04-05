@@ -10,6 +10,24 @@ function ENT:SetupDataTables()
 	self:NetworkVar("Bool", 0, "Working")
 end
 
+function ENT:SetSelected(selected)
+    self.selected = selected
+
+    if ( self.selected ) then
+        self:SetColor(Color(255, 255, 0))
+    else
+        self:SetColor(Color(255, 255, 255))
+    end
+end
+
+function ENT:GetAbilities()
+	if not ( minerva.buildings.Get(self:GetBuildingIndex()) ) then
+		return
+	end
+	
+	return minerva.buildings.Get(self:GetBuildingIndex()).abilities
+end
+
 if ( SERVER ) then
 
 function ENT:Initialize()
