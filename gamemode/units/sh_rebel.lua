@@ -2,7 +2,7 @@ local UNIT = {}
 
 UNIT.uniqueID = "unit_rebel"
 UNIT.name = "Rebel"
-UNIT.description = ""
+UNIT.description = "Rebels are the foot soldiers of the Resistance, with combat experience and some training, but not on par with the Combine's troops."
 
 UNIT.population = 1
 UNIT.buildTime = 24

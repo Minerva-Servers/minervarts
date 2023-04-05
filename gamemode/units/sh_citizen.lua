@@ -2,7 +2,7 @@ local UNIT = {}
 
 UNIT.uniqueID = "unit_citizen"
 UNIT.name = "Citizen"
-UNIT.description = ""
+UNIT.description = "Citizens are ordinary humans who are not directly involved with either the Combine or the Resistance."
 
 UNIT.population = 1
 UNIT.buildTime = 8

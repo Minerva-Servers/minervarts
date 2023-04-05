@@ -2,7 +2,7 @@ local UNIT = {}
 
 UNIT.uniqueID = "unit_rebel_engineer"
 UNIT.name = "Rebel Engineer"
-UNIT.description = ""
+UNIT.description = "Skilled builders and repairers who gather scrap from designated points to construct and maintain structures for the Resistance."
 
 UNIT.population = 1
 UNIT.buildTime = 15
