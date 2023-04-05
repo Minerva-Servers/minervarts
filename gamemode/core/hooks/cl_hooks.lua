@@ -17,10 +17,6 @@ function GM:CalcView(ply, pos, angles, fov)
     return view
 end
 
-function GM:InputMouseApply(cmd, x, y, ang)
-    cmd:SetViewAngles(Angle(60, 130, 0))
-end
-
 function GM:Think()
     if ( input.IsKeyDown(KEY_W) ) then
         LocalPlayer():ConCommand("+forward")
