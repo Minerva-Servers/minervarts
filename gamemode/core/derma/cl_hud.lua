@@ -93,7 +93,7 @@ function PANEL:Init()
     self.circle = self:Add("DPanel")
     self.circle:SetSize(64, 64)
     self.circle.Paint = function(this, width, height)
-        draw.SimpleTextOutlined("Selected", "DermaDefault", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+        draw.SimpleTextOutlined("Selected", "DermaDefault", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
         surface.SetDrawColor(255, 255, 255, 100)
         surface.DrawOutlinedRect(0, 0, width, height)
     end
