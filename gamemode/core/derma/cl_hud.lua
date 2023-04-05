@@ -114,9 +114,9 @@ function PANEL:OnMousePressed(mouseCode)
             mask = MASK_SHOT_HULL
         })
 
-        if trace.HitNonWorld then
+        if ( trace.HitNonWorld ) then
             local entity = trace.Entity
-            if entity:IsValid() then
+            if ( entity:IsValid() ) then
                 selectedEntities = {}
                 table.insert(selectedEntities, entity)
                 self.circle:SetPos(mousePos - self.circle:GetWide()/2, mousePos - self.circle:GetTall()/2)
@@ -134,6 +134,7 @@ function PANEL:OnMouseReleased(mouseCode)
         for k, v in pairs(selectedEntities) do
             v:SetSelected(false)
         end
+        self:SetSelected(nil)
         selectedEntities = {}
         self.circle:SetVisible(false)
     end
@@ -143,11 +144,13 @@ end
 function PANEL:Think()
     local selectedPos = Vector(0, 0, 0)
     local numSelected = #selectedEntities
-    if numSelected > 0 then
-        for i, entity in ipairs(selectedEntities) do
-            selectedPos = selectedPos + entity:GetPos()
+    if ( numSelected > 0 ) then
+        for k, v in ipairs(selectedEntities) do
+            selectedPos = selectedPos + v:GetPos()
         end
+        
         selectedPos = selectedPos / numSelected
+
         local screenPos = selectedPos:ToScreen()
         self.circle:SetPos(screenPos.x - self.circle:GetWide()/2, screenPos.y - self.circle:GetTall()/2)
         self.circle:SetVisible(true)
@@ -163,6 +166,10 @@ function PANEL:SetSelected(entity)
     for i = 1, 16 do
         self.abilities[i]:SetText("")
         self.abilities[i]:SetVisible(false)
+    end
+
+    if not ( IsValid(entity) ) then
+        return
     end
     
     // get abilities from entity
