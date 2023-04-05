@@ -12,6 +12,11 @@ function PANEL:Init()
 
     self:SetSize(ScrW(), ScrH())
     self:ParentToHUD()
+    self:MakePopup()
+
+    self:SetKeyboardInputEnabled(true)
+    self:SetMouseInputEnabled(true)
+    self:SetWorldClicker(true)
 
     // abilities panel
     local abilities = self:Add("DPanel")
@@ -78,6 +83,66 @@ function PANEL:Init()
         end
 
         grid:AddItem(button)
+    end
+
+    // selection circle
+    self.circle = self:Add("DPanel")
+    self.circle:SetSize(64, 64)
+    self.circle.Paint = function(self, w, h)
+        draw.SimpleTextOutlined("Selected", "DermaDefault", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+        surface.SetDrawColor(255, 255, 255, 100)
+        surface.DrawOutlinedRect(0, 0, w, h)
+    end
+    self.circle:SetVisible(false)
+end
+
+// store selected entities in a table
+local selectedEntities = {}
+
+// select unit on mouse click
+function PANEL:OnMousePressed(mouseCode)
+    if mouseCode == MOUSE_LEFT then
+        local mousePos = self:CursorPos()
+        local trace = util.TraceLine({
+            start = LocalPlayer():GetShootPos(),
+            endpos = LocalPlayer():GetShootPos() + LocalPlayer():GetAimVector() * 10000,
+            filter = LocalPlayer(),
+            mask = MASK_SHOT_HULL
+        })
+        if trace.HitNonWorld then
+            local entity = trace.Entity
+            if entity:IsValid() then
+                selectedEntities = {}
+                table.insert(selectedEntities, entity)
+                self.circle:SetPos(mousePos - self.circle:GetWide()/2, mousePos - self.circle:GetTall()/2)
+                self.circle:SetVisible(true)
+            end
+        end
+    end
+end
+
+// clear selection on right-click
+function PANEL:OnMouseReleased(mouseCode)
+    if mouseCode == MOUSE_RIGHT then
+        selectedEntities = {}
+        self.circle:SetVisible(false)
+    end
+end
+
+// highlight selected entities with circle
+function PANEL:Think()
+    local selectedPos = Vector(0, 0, 0)
+    local numSelected = #selectedEntities
+    if numSelected > 0 then
+        for i, entity in ipairs(selectedEntities) do
+            selectedPos = selectedPos + entity:GetPos()
+        end
+        selectedPos = selectedPos / numSelected
+        local screenPos = selectedPos:ToScreen()
+        self.circle:SetPos(screenPos.x - self.circle:GetWide()/2, screenPos.y - self.circle:GetTall()/2)
+        self.circle:SetVisible(true)
+    else
+        self.circle:SetVisible(false)
     end
 end
 

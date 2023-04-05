@@ -22,8 +22,9 @@ function GM:Move(ply, mv)
 
     vel = vel + ang:Forward() * mv:GetForwardSpeed() * speed
     vel = vel + ang:Right() * mv:GetSideSpeed() * speed
+    vel.z = 0 // Zero out the Z component of the velocity vector
 
-    if ( math.abs( mv:GetForwardSpeed() ) + math.abs( mv:GetSideSpeed() ) + math.abs( mv:GetUpSpeed() ) < 0.1 ) then
+    if ( math.abs( mv:GetForwardSpeed() ) + math.abs( mv:GetSideSpeed() ) < 0.1 ) then // Only check forward and side speed
         vel = vel * 0.90
     else
         vel = vel * 0.99
