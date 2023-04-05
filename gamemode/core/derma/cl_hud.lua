@@ -19,23 +19,25 @@ function PANEL:Init()
     self:SetWorldClicker(true)
 
     // abilities panel
-    local abilities = self:Add("DPanel")
-    abilities:SetPos(0, self:GetTall() - abilitiesScale)
-    abilities:SetSize(abilitiesScale, abilitiesScale)
-    abilities.Paint = function(self, w, h)
+    self.abilities = {}
+
+    self.abilitiesPanel = self:Add("DPanel")
+    self.abilitiesPanel:SetPos(0, self:GetTall() - abilitiesScale)
+    self.abilitiesPanel:SetSize(abilitiesScale, abilitiesScale)
+    self.abilitiesPanel.Paint = function(self, w, h)
         // draw abilities panel background
         draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
     end
     
     // abilities grid
-    local grid = abilities:Add("DGrid")
-    grid:SetCols(4)
-    grid:SetColWide(abilitiesButtonScale)
-    grid:SetRowHeight(abilitiesButtonScale)
+    self.abilitiesGrid = self.abilitiesPanel:Add("DGrid")
+    self.abilitiesGrid:SetCols(4)
+    self.abilitiesGrid:SetColWide(abilitiesButtonScale)
+    self.abilitiesGrid:SetRowHeight(abilitiesButtonScale)
 
     // populate abilities grid with buttons
     for i = 1, 16 do
-        local button = grid:Add("DButton")
+        local button = self.abilitiesGrid:Add("DButton")
         button:SetText(string.char(64 + i))
         button:SetSize(abilitiesButtonScale, abilitiesButtonScale)
         button.Paint = function(self, w, h)
@@ -43,7 +45,9 @@ function PANEL:Init()
             draw.RoundedBox(0, 0, 0, w, h, Color(150, 150, 150, 200))
         end
 
-        grid:AddItem(button)
+        self.abilitiesGrid:AddItem(button)
+
+        table.insert(self.abilities, button)
     end
 
     // minimap
@@ -109,6 +113,7 @@ function PANEL:OnMousePressed(mouseCode)
             filter = LocalPlayer(),
             mask = MASK_SHOT_HULL
         })
+
         if trace.HitNonWorld then
             local entity = trace.Entity
             if entity:IsValid() then
@@ -116,6 +121,8 @@ function PANEL:OnMousePressed(mouseCode)
                 table.insert(selectedEntities, entity)
                 self.circle:SetPos(mousePos - self.circle:GetWide()/2, mousePos - self.circle:GetTall()/2)
                 self.circle:SetVisible(true)
+                self:SetSelected(entity)
+                entity:SetSelected(true)
             end
         end
     end
@@ -124,6 +131,9 @@ end
 // clear selection on right-click
 function PANEL:OnMouseReleased(mouseCode)
     if mouseCode == MOUSE_RIGHT then
+        for k, v in pairs(selectedEntities) do
+            v:SetSelected(false)
+        end
         selectedEntities = {}
         self.circle:SetVisible(false)
     end
@@ -143,6 +153,31 @@ function PANEL:Think()
         self.circle:SetVisible(true)
     else
         self.circle:SetVisible(false)
+    end
+end
+
+function PANEL:SetSelected(entity)
+    self.entity = entity
+    
+    // clear existing abilities
+    for i = 1, 16 do
+        self.abilities[i]:SetText("")
+        self.abilities[i]:SetVisible(false)
+    end
+    
+    // get abilities from entity
+    local abilities = entity:GetAbilities()
+
+    for k, v in pairs(abilities) do
+        for i = 1, 16 do
+            if ( self.abilities[i] ) then
+                self.abilities[i]:SetText(k)
+                self.abilities[i]:SetVisible(true)
+                self.abilities[i].ability = k
+                self.abilities[i].used = true
+                break
+            end
+        end
     end
 end
 
