@@ -1,4 +1,4 @@
-DeriveGamemode("sandbox")
+DeriveGamemode("base")
 
 minerva = minerva or {}
 minerva.gui = minerva.gui or {}
