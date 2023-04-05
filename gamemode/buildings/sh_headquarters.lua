@@ -36,7 +36,7 @@ BUILDING.providesPopulation = 9
 BUILDING.buildTime = 100
 BUILDING.health = 2000
 
-BUILDING.model = "models/lw_props/lw_buildings/lw_combine_hq.mdl"
+BUILDING.model = "models/lw_props/lw_buildings/combine/lw_combine_hq.mdl"
 
 BUILDING.costs = {
     ["resource_requisition"] = 300,
