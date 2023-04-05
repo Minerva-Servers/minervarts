@@ -26,7 +26,7 @@ function GM:PlayerSpawn(ply)
     })
 
     // Spawn the entity below the player at the hit position
-    minerva.buildings.Create(BUILDING_REBEL_HQ, function(ent)
+    minerva.buildings.Create(minerva.factions.Get(ply:Team()).startBuilding, function(ent)
         ent:SetPos(trace.HitPos)
         ent:DropToFloor()
 
