@@ -2,6 +2,6 @@
 {
 	"base" 			"sandbox"
 	"title"			"Minerva Wars"
-	"author" 		"Reece™"
+	"author" 		"Riggs"
 	"menusystem"	"1"
 }

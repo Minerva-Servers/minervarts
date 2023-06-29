@@ -1,5 +1,5 @@
 local zoomDistance = zoomDistance or 0
-local zoomSpeed = 25
+local zoomSpeed = zoomSpeed or 25
 function GM:PlayerButtonDown(ply, key)
     if ( key == MOUSE_WHEEL_DOWN ) then
         zoomDistance = zoomDistance - zoomSpeed
@@ -20,40 +20,43 @@ function GM:Move(ply, mv)
     local pos = mv:GetOrigin()
     local vel = mv:GetVelocity()
 
+    ang.p = 0
+
     vel = vel + ang:Forward() * mv:GetForwardSpeed() * speed
     vel = vel + ang:Right() * mv:GetSideSpeed() * speed
     vel.z = 0 // Zero out the Z component of the velocity vector
 
-    if ( math.abs( mv:GetForwardSpeed() ) + math.abs( mv:GetSideSpeed() ) < 0.1 ) then // Only check forward and side speed
-        vel = vel * 0.90
-    else
-        vel = vel * 0.99
-    end
+    vel = vel * 0.99
 
     // Perform a trace to check if there's an obstacle between the current position and the desired position
-    local trace = util.TraceLine({
+    local trace = util.TraceHull({
         start = pos,
         endpos = pos + vel,
+        mins = Vector(-64, -64, -64),
+        maxs = Vector(64, 64, 64),
         mask = MASK_PLAYERSOLID_BRUSHONLY,
-        filter = ply
+        filter = ply,
     })
 
     // If there's an obstacle, adjust the desired position accordingly
-    if trace.Hit then
+    if ( trace.Hit ) then
         pos = trace.HitPos - vel:GetNormalized() * 5
     else
         pos = pos + vel
     end
 
-    local trace2 = util.TraceLine({
+    local trace2 = util.TraceHull({
         start = pos,
         endpos = pos + Vector(0, 0, -1000000),
+        mins = Vector(-64, -64, -64),
+        maxs = Vector(64, 64, 64),
         mask = MASK_PLAYERSOLID_BRUSHONLY,
+        filter = ply,
     })
 
-    pos.z = Lerp(0.06, pos.z, trace2.HitPos.z + 800 - zoomDistance * 5)
+    pos.z = Lerp(0.06, pos.z, trace2.HitPos.z + 800)
 
-    if ( pos.z < -1000 ) then
+    if ( ply:IsStuck() ) then
         pos = Vector(0, 0, 100)
     end
 

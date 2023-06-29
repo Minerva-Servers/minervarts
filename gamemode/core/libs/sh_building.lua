@@ -18,35 +18,25 @@ function minerva.buildings.Register(buildingData)
         error("No model provided for building "..buildingData.name.."!")
     end
 
+    if not ( buildingData.uniqueID ) then
+        error("No uniqueID provided for building "..buildingData.name.."!")
+    end
+
     local buildingDataIndex = #minerva.buildings.stored + 1
     buildingData.index = buildingDataIndex
 
-    minerva.buildings.stored[#minerva.buildings.stored + 1] = buildingData
+    minerva.buildings.stored[buildingData.uniqueID] = buildingData
 
     return buildingDataIndex
 end
 
 if ( SERVER ) then
     function minerva.buildings.Create(uniqueID, callback)
-        local buildingIndex
-    
-        for index, building in ipairs(minerva.buildings.GetAll()) do
-            if ( building.uniqueID == uniqueID ) then
-                buildingIndex = index
-                break
-            end
-        end
-    
-        if not ( buildingIndex ) then
-            error("Building with uniqueID "..uniqueID.." does not exist!")
-            return
-        end
-
-        local buildingTable = minerva.buildings.Get(buildingIndex)
+        local buildingTable = minerva.buildings.Get(uniqueID)
 
         local building = ents.Create("minervawars_building")
         building:Spawn()
-        building:SetBuildingIndex(buildingIndex)
+        building:SetBuildingIndex(uniqueID)
         building:SetModel(buildingTable.model)
         building:PhysicsInit(SOLID_BBOX)
         building:SetSolid(SOLID_BBOX)

@@ -105,7 +105,7 @@ local selectedEntities = {}
 
 // select unit on mouse click
 function PANEL:OnMousePressed(mouseCode)
-    if mouseCode == MOUSE_LEFT then
+    if ( mouseCode == MOUSE_LEFT ) then
         local mousePos = self:CursorPos()
         local trace = util.TraceLine({
             start = LocalPlayer():GetShootPos(),
@@ -119,7 +119,7 @@ function PANEL:OnMousePressed(mouseCode)
             if ( entity:IsValid() ) then
                 selectedEntities = {}
                 table.insert(selectedEntities, entity)
-                self.circle:SetPos(mousePos - self.circle:GetWide()/2, mousePos - self.circle:GetTall()/2)
+                self.circle:SetPos(mousePos - self.circle:GetWide() / 2, mousePos - self.circle:GetTall() / 2)
                 self.circle:SetVisible(true)
                 self:SetSelected(entity)
                 entity:SetSelected(true)
@@ -134,6 +134,7 @@ function PANEL:OnMouseReleased(mouseCode)
         for k, v in pairs(selectedEntities) do
             v:SetSelected(false)
         end
+        
         self:SetSelected(nil)
         selectedEntities = {}
         self.circle:SetVisible(false)
@@ -152,7 +153,7 @@ function PANEL:Think()
         selectedPos = selectedPos / numSelected
 
         local screenPos = selectedPos:ToScreen()
-        self.circle:SetPos(screenPos.x - self.circle:GetWide()/2, screenPos.y - self.circle:GetTall()/2)
+        self.circle:SetPos(screenPos.x - self.circle:GetWide() / 2, screenPos.y - self.circle:GetTall() / 2)
         self.circle:SetVisible(true)
     else
         self.circle:SetVisible(false)
@@ -174,14 +175,35 @@ function PANEL:SetSelected(entity)
     
     // get abilities from entity
     local abilities = entity:GetAbilities()
+    PrintTable(abilities)
 
     for k, v in pairs(abilities) do
         for i = 1, 16 do
             if ( self.abilities[i] ) then
-                self.abilities[i]:SetText(k)
+                self.abilities[i]:SetText("")
                 self.abilities[i]:SetVisible(true)
                 self.abilities[i].ability = k
                 self.abilities[i].used = true
+                self.abilities[i].PaintOver = function(this, width, height)
+                    if ( minerva.abilities.Get(k) ) then
+                        surface.SetDrawColor(color_white)
+                        surface.SetMaterial(Material(minerva.abilities.Get(k).icon, "smooth mips"))
+                        surface.DrawTexturedRect(0, 0, width, height)
+                    elseif ( minerva.units.Get(k) ) then
+                        surface.SetDrawColor(color_white)
+                        surface.SetMaterial(Material(minerva.units.Get(k).icon, "smooth mips"))
+                        surface.DrawTexturedRect(0, 0, width, height)
+                    else
+                        draw.RoundedBox(0, 0, 0, width, height, Color(25, 25, 25, 100))
+                    end
+                end
+                self.abilities[i].DoClick = function(this)
+                    net.Start("minervaWars.AbilityBuilding")
+                        net.WriteEntity(entity)
+                        net.WriteString(k)
+                    net.SendToServer()
+                end
+
                 break
             end
         end

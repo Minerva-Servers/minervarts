@@ -22,7 +22,7 @@ function GM:PlayerSpawn(ply)
         start = ply:GetPos(),
         endpos = ply:GetPos() - Vector(0, 0, 1000),
         mask = MASK_PLAYERSOLID,
-        filter = ply
+        filter = ply,
     })
 
     // Spawn the entity below the player at the hit position

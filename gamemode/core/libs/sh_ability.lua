@@ -13,7 +13,7 @@ function minerva.abilities.Register(abilityData)
     local abilityDataIndex = #minerva.abilities.stored + 1
     abilityData.index = abilityDataIndex
 
-    minerva.abilities.stored[#minerva.abilities.stored + 1] = abilityData
+    minerva.abilities.stored[abilityData.uniqueID] = abilityData
 
     return abilityDataIndex
 end

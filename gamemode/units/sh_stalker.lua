@@ -3,6 +3,7 @@ local UNIT = {}
 UNIT.uniqueID = "unit_stalker"
 UNIT.name = "Stalker"
 UNIT.description = "Mindless servants of the Combine, surgically altered both physically and mentally to operate machinery and guard the Citadel core."
+UNIT.icon = "minervawars/abilities/unit_stalker.png"
 
 UNIT.population = 1
 UNIT.buildTime = 12

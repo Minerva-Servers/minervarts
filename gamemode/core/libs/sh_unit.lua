@@ -43,10 +43,14 @@ function minerva.units.Register(unitData)
         error("No models provided for unit "..unitData.name.."!")
     end
 
+    if not ( unitData.uniqueID ) then
+        error("No uniqueID provided for unit "..unitData.name.."!")
+    end
+
     local unitDataIndex = #minerva.units.stored + 1
     unitData.index = unitDataIndex
 
-    minerva.units.stored[#minerva.units.stored + 1] = unitData
+    minerva.units.stored[unitData.uniqueID] = unitData
 
     return unitDataIndex
 end

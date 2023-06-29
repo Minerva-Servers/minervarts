@@ -10,7 +10,7 @@ function GM:CalcView(ply, pos, angles, fov)
     view.angles = Angle(60, 130, 0)
     view.fov = fov
     view.znear = 10
-    view.zfar = 3000
+    view.zfar = 4096
 
     ply:SetEyeAngles(view.angles)
 

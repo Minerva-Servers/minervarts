@@ -31,6 +31,7 @@ BUILDING = {}
 BUILDING.uniqueID = "building_comb_headquarters"
 BUILDING.name = "Combine Headquarters"
 BUILDING.description = "The Combine headquarters is a towering structure that closely resembles a smaller version of the citadel. It features dark, imposing architecture with sharp angles and a towering central spire. The building is surrounded by walls and guard towers, with heavily armed soldiers stationed at every entrance. The interior is a labyrinthine network of hallways, labs, and holding cells, with a looming sense of oppression and fear pervading every inch of the space. Screens and speakers are scattered throughout, constantly broadcasting propaganda and surveillance footage. The Combine HQ is the nerve center of their oppressive regime, where they plot and scheme to maintain their hold on power."
+BUILDING.icon = "minervawars/abilities/building_comb_headquarters.png"
 
 BUILDING.providesPopulation = 9
 BUILDING.buildTime = 100
