@@ -1,3 +1,6 @@
+local Color = Color
+local minerva = minerva
+
 local FACTION = {}
 
 FACTION.uniqueID = "faction_combine"

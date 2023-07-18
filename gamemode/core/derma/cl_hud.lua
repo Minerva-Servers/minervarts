@@ -1,3 +1,31 @@
+local ScreenScale = ScreenScale
+local ScrW = ScrW
+local ScrH = ScrH
+local draw_RoundedBox = draw.RoundedBox
+local Color = Color
+local string_char = string.char
+local table_insert = table.insert
+local draw_SimpleTextOutlined = draw.SimpleTextOutlined
+local surface_SetDrawColor = surface.SetDrawColor
+local surface_DrawOutlinedRect = surface.DrawOutlinedRect
+local util_TraceLine = util.TraceLine
+local LocalPlayer = LocalPlayer
+local pairs = pairs
+local Vector = Vector
+local ipairs = ipairs
+local IsValid = IsValid
+local PrintTable = PrintTable
+local minerva = minerva
+local surface_SetMaterial = surface.SetMaterial
+local Material = Material
+local surface_DrawTexturedRect = surface.DrawTexturedRect
+local net_Start = net.Start
+local net_WriteEntity = net.WriteEntity
+local net_WriteString = net.WriteString
+local net_SendToServer = net.SendToServer
+local vgui_Register = vgui.Register
+local vgui_Create = vgui.Create
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -26,7 +54,7 @@ function PANEL:Init()
     self.abilitiesPanel:SetSize(abilitiesScale, abilitiesScale)
     self.abilitiesPanel.Paint = function(this, width, height)
         // draw abilities panel background
-        draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
+        draw_RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
     end
     
     // abilities grid
@@ -38,16 +66,16 @@ function PANEL:Init()
     // populate abilities grid with buttons
     for i = 1, 16 do
         local button = self.abilitiesGrid:Add("DButton")
-        button:SetText(string.char(64 + i))
+        button:SetText(string_char(64 + i))
         button:SetSize(abilitiesButtonScale, abilitiesButtonScale)
         button.Paint = function(this, width, height)
             // draw button background
-            draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
+            draw_RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
         end
 
         self.abilitiesGrid:AddItem(button)
 
-        table.insert(self.abilities, button)
+        table_insert(self.abilities, button)
     end
 
     // minimap
@@ -56,7 +84,7 @@ function PANEL:Init()
     minimap:SetSize(minimapScale, minimapScale)
     minimap.Paint = function(this, width, height)
         // draw minimap background
-        draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
+        draw_RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
     end
 
     // selected units/buildings panel
@@ -65,7 +93,7 @@ function PANEL:Init()
     selected:SetSize(self:GetWide() - padding * 2 - minimap:GetWide() - abilitiesScale, selectedScale)
     selected.Paint = function(this, width, height)
         // draw selected units/buildings panel background
-        draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
+        draw_RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
     end
     
     // selected units/buildings grid
@@ -83,7 +111,7 @@ function PANEL:Init()
         button:SetTooltip("Kleiner Unit")
         button.Paint = function(this, width, height)
             // draw button background
-            draw.RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
+            draw_RoundedBox(0, 0, 0, width, height, Color(150, 150, 150, 200))
         end
 
         grid:AddItem(button)
@@ -93,9 +121,9 @@ function PANEL:Init()
     self.circle = self:Add("DPanel")
     self.circle:SetSize(64, 64)
     self.circle.Paint = function(this, width, height)
-        draw.SimpleTextOutlined("Selected", "DermaDefault", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
-        surface.SetDrawColor(255, 255, 255, 100)
-        surface.DrawOutlinedRect(0, 0, width, height)
+        draw_SimpleTextOutlined("Selected", "DermaDefault", width / 2, height / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+        surface_SetDrawColor(255, 255, 255, 100)
+        surface_DrawOutlinedRect(0, 0, width, height)
     end
     self.circle:SetVisible(false)
 end
@@ -107,7 +135,7 @@ local selectedEntities = {}
 function PANEL:OnMousePressed(mouseCode)
     if ( mouseCode == MOUSE_LEFT ) then
         local mousePos = self:CursorPos()
-        local trace = util.TraceLine({
+        local trace = util_TraceLine({
             start = LocalPlayer():GetShootPos(),
             endpos = LocalPlayer():GetShootPos() + LocalPlayer():GetAimVector() * 10000,
             filter = LocalPlayer(),
@@ -118,7 +146,7 @@ function PANEL:OnMousePressed(mouseCode)
             local entity = trace.Entity
             if ( entity:IsValid() ) then
                 selectedEntities = {}
-                table.insert(selectedEntities, entity)
+                table_insert(selectedEntities, entity)
                 self.circle:SetPos(mousePos - self.circle:GetWide() / 2, mousePos - self.circle:GetTall() / 2)
                 self.circle:SetVisible(true)
                 self:SetSelected(entity)
@@ -186,22 +214,22 @@ function PANEL:SetSelected(entity)
                 self.abilities[i].used = true
                 self.abilities[i].PaintOver = function(this, width, height)
                     if ( minerva.abilities.Get(k) ) then
-                        surface.SetDrawColor(color_white)
-                        surface.SetMaterial(Material(minerva.abilities.Get(k).icon, "smooth mips"))
-                        surface.DrawTexturedRect(0, 0, width, height)
+                        surface_SetDrawColor(color_white)
+                        surface_SetMaterial(Material(minerva.abilities.Get(k).icon, "smooth mips"))
+                        surface_DrawTexturedRect(0, 0, width, height)
                     elseif ( minerva.units.Get(k) ) then
-                        surface.SetDrawColor(color_white)
-                        surface.SetMaterial(Material(minerva.units.Get(k).icon, "smooth mips"))
-                        surface.DrawTexturedRect(0, 0, width, height)
+                        surface_SetDrawColor(color_white)
+                        surface_SetMaterial(Material(minerva.units.Get(k).icon, "smooth mips"))
+                        surface_DrawTexturedRect(0, 0, width, height)
                     else
-                        draw.RoundedBox(0, 0, 0, width, height, Color(25, 25, 25, 100))
+                        draw_RoundedBox(0, 0, 0, width, height, Color(25, 25, 25, 100))
                     end
                 end
                 self.abilities[i].DoClick = function(this)
-                    net.Start("minervaWars.AbilityBuilding")
-                        net.WriteEntity(entity)
-                        net.WriteString(k)
-                    net.SendToServer()
+                    net_Start("minervaWars.AbilityBuilding")
+                        net_WriteEntity(entity)
+                        net_WriteString(k)
+                    net_SendToServer()
                 end
 
                 break
@@ -210,10 +238,10 @@ function PANEL:SetSelected(entity)
     end
 end
 
-vgui.Register("minerva.HUD", PANEL, "EditablePanel")
+vgui_Register("minerva.HUD", PANEL, "EditablePanel")
 
 if ( IsValid(minerva.gui.hud) ) then
     minerva.gui.hud:Remove()
 end
 
-vgui.Create("minerva.HUD")
+vgui_Create("minerva.HUD")

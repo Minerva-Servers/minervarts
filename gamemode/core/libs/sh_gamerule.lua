@@ -1,3 +1,5 @@
+local minerva = minerva
+
 minerva.gamerules = minerva.gamerules or {}
 minerva.gamerules.stored = minerva.gamerules.stored or {}
 

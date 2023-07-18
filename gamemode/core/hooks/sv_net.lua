@@ -1,13 +1,23 @@
-util.AddNetworkString("minervaWars.AbilityBuilding")
+local util_AddNetworkString = util.AddNetworkString
+local net_Receive = net.Receive
+local net_ReadEntity = net.ReadEntity
+local IsValid = IsValid
+local error = error
+local net_ReadString = net.ReadString
+local minerva = minerva
+local print = print
+local Vector = Vector
 
-net.Receive("minervaWars.AbilityBuilding", function(len, ply)
-    local ent = net.ReadEntity()
+util_AddNetworkString("minervaWars.AbilityBuilding")
+
+net_Receive("minervaWars.AbilityBuilding", function(len, ply)
+    local ent = net_ReadEntity()
 
     if not ( IsValid(ent) ) then
         error("no valid entity found")
     end
 
-    local ability = net.ReadString()
+    local ability = net_ReadString()
 
     if ( minerva.units.Get(ability) ) then
         print(ability)

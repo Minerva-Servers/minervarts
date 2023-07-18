@@ -1,3 +1,5 @@
+local minerva = minerva
+
 local UNIT = {}
 
 UNIT.uniqueID = "unit_rebel_engineer"

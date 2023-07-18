@@ -1,3 +1,5 @@
+local minerva = minerva
+
 minerva.abilities = minerva.abilities or {}
 minerva.abilities.stored = minerva.abilities.stored or {}
 

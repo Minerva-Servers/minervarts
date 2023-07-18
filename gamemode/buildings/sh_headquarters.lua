@@ -1,3 +1,5 @@
+local minerva = minerva
+
 // REBEL
 local BUILDING = {}
 

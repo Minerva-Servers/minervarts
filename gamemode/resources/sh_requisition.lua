@@ -1,3 +1,5 @@
+local minerva = minerva
+
 local RESOURCE = {}
 
 RESOURCE.name = "Requisition"

@@ -1,3 +1,8 @@
+local error = error
+local minerva = minerva
+local ents_Create = SERVER and ents.Create
+local table_Random = table.Random
+
 minerva.units = minerva.units or {}
 minerva.units.stored = {}
 
@@ -59,10 +64,10 @@ if ( SERVER ) then
     function minerva.units.Create(unitIndex, callback)
         local unitTable = minerva.units.Get(unitIndex)
 
-        local unit = ents.Create("minervawars_unit")
+        local unit = ents_Create("minervawars_unit")
         unit:SetUnitIndex(unitIndex)
         unit:Spawn()
-        unit:SetModel(table.Random(unitTable.models or CITIZEN_MODELS))
+        unit:SetModel(table_Random(unitTable.models or CITIZEN_MODELS))
 
         if ( callback ) then
             callback(unit)

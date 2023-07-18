@@ -1,3 +1,8 @@
+local AddCSLuaFile = AddCSLuaFile
+local Color = Color
+local minerva = minerva
+local IsValid = IsValid
+
 AddCSLuaFile()
 
 ENT.Type = "anim"

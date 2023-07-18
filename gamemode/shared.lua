@@ -1,3 +1,6 @@
+local FindMetaTable = FindMetaTable
+local minerva = minerva
+
 ENTITY = FindMetaTable("Entity")
 PLAYER = FindMetaTable("Player")
 

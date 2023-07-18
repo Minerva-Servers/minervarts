@@ -1,3 +1,7 @@
+local error = error
+local minerva = minerva
+local ents_Create = SERVER and ents.Create
+
 minerva.buildings = minerva.buildings or {}
 minerva.buildings.stored = {}
 
@@ -34,7 +38,7 @@ if ( SERVER ) then
     function minerva.buildings.Create(uniqueID, callback)
         local buildingTable = minerva.buildings.Get(uniqueID)
 
-        local building = ents.Create("minervawars_building")
+        local building = ents_Create("minervawars_building")
         building:Spawn()
         building:SetBuildingIndex(uniqueID)
         building:SetModel(buildingTable.model)

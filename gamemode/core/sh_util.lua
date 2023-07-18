@@ -1,3 +1,12 @@
+local error = error
+local include = include
+local AddCSLuaFile = AddCSLuaFile
+local ipairs = ipairs
+local file_Find = file.Find
+local minerva = minerva
+local Material = Material
+local player_GetAll = player.GetAll
+
 minerva.util = minerva.util or {}
 
 function minerva.util.Include(fileName, realm)
@@ -25,7 +34,7 @@ end
 function minerva.util.IncludeDirectory(directory, bFromLua)
 	local baseDir = "minervawars/gamemode/"
 
-	for _, v in ipairs(file.Find((bFromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
+	for _, v in ipairs(file_Find((bFromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
 		minerva.util.Include(directory.."/"..v)
 	end
 end
@@ -47,7 +56,7 @@ function minerva.util.GetPlayerByName(find, bMultiple)
 
 	local players = {}
 
-	for i, v in ipairs(player.GetAll()) do
+	for i, v in ipairs(player_GetAll()) do
 		local pname = v:GetName()
 		local pname_lower = pname:lower()
 

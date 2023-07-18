@@ -1,3 +1,7 @@
+local error = error
+local team_SetUp = team.SetUp
+local minerva = minerva
+
 minerva.factions = minerva.factions or {}
 minerva.factions.stored = {}
 
@@ -23,7 +27,7 @@ function minerva.factions.Register(factionData)
 
     minerva.factions.stored[#minerva.factions.stored + 1] = factionData
 
-    team.SetUp(factionDataIndex, factionData.name, factionData.color, false)
+    team_SetUp(factionDataIndex, factionData.name, factionData.color, false)
 
     return factionDataIndex
 end

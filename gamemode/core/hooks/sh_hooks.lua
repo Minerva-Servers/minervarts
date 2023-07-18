@@ -1,3 +1,7 @@
+local util_TraceHull = util.TraceHull
+local Vector = Vector
+local Lerp = Lerp
+
 local zoomDistance = zoomDistance or 0
 local zoomSpeed = zoomSpeed or 25
 function GM:PlayerButtonDown(ply, key)
@@ -29,7 +33,7 @@ function GM:Move(ply, mv)
     vel = vel * 0.99
 
     // Perform a trace to check if there's an obstacle between the current position and the desired position
-    local trace = util.TraceHull({
+    local trace = util_TraceHull({
         start = pos,
         endpos = pos + vel,
         mins = Vector(-64, -64, -64),
@@ -45,7 +49,7 @@ function GM:Move(ply, mv)
         pos = pos + vel
     end
 
-    local trace2 = util.TraceHull({
+    local trace2 = util_TraceHull({
         start = pos,
         endpos = pos + Vector(0, 0, -1000000),
         mins = Vector(-64, -64, -64),

@@ -1,3 +1,5 @@
+local minerva = minerva
+
 local ABILITY = {}
 
 ABILITY.uniqueID = "ability_attack"

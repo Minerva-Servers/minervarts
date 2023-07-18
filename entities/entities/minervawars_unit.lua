@@ -1,3 +1,7 @@
+local AddCSLuaFile = AddCSLuaFile
+local Color = Color
+local minerva = minerva
+
 AddCSLuaFile()
 
 ENT.Base = "base_nextbot"

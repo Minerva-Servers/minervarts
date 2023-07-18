@@ -1,3 +1,5 @@
+local minerva = minerva
+
 minerva.resources = minerva.resources or {}
 minerva.resources.stored = minerva.resources.stored or {}
 

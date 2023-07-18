@@ -1,3 +1,9 @@
+local Vector = Vector
+local Angle = Angle
+local input_IsKeyDown = input.IsKeyDown
+local LocalPlayer = LocalPlayer
+local concommand_Add = concommand.Add
+
 local cameraEnabled = cameraEnabled or true
 function GM:CalcView(ply, pos, angles, fov)
     if not ( cameraEnabled ) then
@@ -18,18 +24,18 @@ function GM:CalcView(ply, pos, angles, fov)
 end
 
 function GM:Think()
-    if ( input.IsKeyDown(KEY_W) ) then
+    if ( input_IsKeyDown(KEY_W) ) then
         LocalPlayer():ConCommand("+forward")
-    elseif ( input.IsKeyDown(KEY_S) ) then
+    elseif ( input_IsKeyDown(KEY_S) ) then
         LocalPlayer():ConCommand("+back")
     else
         LocalPlayer():ConCommand("-forward")
         LocalPlayer():ConCommand("-back")
     end
 
-    if ( input.IsKeyDown(KEY_A) ) then
+    if ( input_IsKeyDown(KEY_A) ) then
         LocalPlayer():ConCommand("+moveleft")
-    elseif ( input.IsKeyDown(KEY_D) ) then
+    elseif ( input_IsKeyDown(KEY_D) ) then
         LocalPlayer():ConCommand("+moveright")
     else
         LocalPlayer():ConCommand("-moveleft")
@@ -38,6 +44,6 @@ function GM:Think()
 end
 
 // Create a console command to toggle the camera control on and off
-concommand.Add("toggle_camera", function()
+concommand_Add("toggle_camera", function()
     cameraEnabled = not cameraEnabled
 end)

@@ -1,3 +1,6 @@
+local DeriveGamemode = DeriveGamemode
+local include = include
+
 DeriveGamemode("base")
 
 minerva = minerva or {}

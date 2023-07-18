@@ -1,3 +1,5 @@
+local minerva = minerva
+
 local GAMERULE = {}
 
 GAMERULE.name = "Annihilation"

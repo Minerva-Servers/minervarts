@@ -1,3 +1,7 @@
+local DeriveGamemode = DeriveGamemode
+local AddCSLuaFile = AddCSLuaFile
+local include = include
+
 DeriveGamemode("base")
 
 minerva = minerva or {}
