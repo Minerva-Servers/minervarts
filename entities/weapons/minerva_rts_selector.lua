@@ -124,14 +124,17 @@ function SWEP:MoveUnits()
                 pathTrack:Remove()
             end)
         else
+            k:SetNetVar("destination", trace.HitPos)
             k:SetLastPosition(trace.HitPos)
             k:SetSchedule(SCHED_NPC_FREEZE)
+
             timer.Simple(1 / 3, function()
                 if not ( IsValid(k) ) then
                     return
                 end
 
                 k:SetSchedule(bShift and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
+                k:SetNetVar("walking", bShift)
             end)
         end
 
@@ -204,19 +207,25 @@ function SWEP:DrawHUD()
 
     local ent = trace.Entity
     if ( IsValid(ent) ) then
-        minerva.outline.Add(ent, ColorAlpha(color_white, 100), 0)
+        minerva.outline.Add(ent, color_white, 0)
     end
 
     local selected = ply:GetNetVar("selected", {})
+    local halos = {}
     for k, v in pairs(selected) do
         if not ( IsValid(k) ) then
             continue
         end
 
-        minerva.outline.Add(k, color_white, 0)
+        table.insert(halos, k)
+    end
+
+    if ( #halos > 0 ) then
+        halo.Add(halos, Color(255, 255, 255), 2, 2, 1, true, true)
     end
 end
 
+local nextThink = 0
 hook.Add("Tick", "MinervaRTS.Selector", function()
     for k, v in player.Iterator() do
         local weapon = v:GetActiveWeapon()
@@ -240,4 +249,36 @@ hook.Add("Tick", "MinervaRTS.Selector", function()
             weapon:ResetSelection()
         end
     end
+
+    if ( CLIENT ) then
+        return
+    end
+
+    if ( nextThink > CurTime() ) then
+        return
+    end
+
+    for k, v in ents.Iterator() do
+        if not ( v:IsNPC() ) then
+            continue
+        end
+
+        local destination = v:GetNetVar("destination")
+        if not ( destination ) then
+            continue
+        end
+
+        local schedule = v:GetCurrentSchedule()
+        if ( schedule == SCHED_FORCED_GO or schedule == SCHED_FORCED_GO_RUN ) then
+            continue
+        end
+
+        local pos = v:GetPos()
+        local dist = pos:Distance(destination)
+        if ( dist > 256 ) then
+            v:SetSchedule(v:GetNetVar("walking") and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
+        end
+    end
+
+    nextThink = CurTime() + 1 / 3
 end)
