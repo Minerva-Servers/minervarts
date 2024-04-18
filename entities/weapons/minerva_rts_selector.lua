@@ -78,6 +78,38 @@ function SWEP:SelectUnit()
     self.nextSelect = CurTime() + 0.1
 end
 
+function SWEP:SelectUnits(entities)
+    if ( CLIENT ) then return end
+
+    if ( self.nextSelect and CurTime() < self.nextSelect ) then
+        return
+    end
+
+    local ply = self.Owner
+
+    ply:ViewPunch(Angle(-1, 0, 0))
+    ply:EmitSound("ambient/machines/keyboard" .. math.random(1, 6) .. "_clicks.wav")
+
+    local bShift = ply:KeyDown(IN_SPEED)
+    local selected = ply:GetNetVar("selected", {})
+
+    if not ( bShift ) then
+        selected = {}
+    end
+
+    for k, v in pairs(entities) do
+        if not ( IsValid(v) ) then
+            continue
+        end
+
+        selected[v] = true
+    end
+
+    ply:SetNetVar("selected", selected)
+
+    self.nextSelect = CurTime() + 0.1
+end
+
 local airNPCs = {
     ["npc_helicopter"] = true,
     ["npc_combinegunship"] = true,
@@ -126,16 +158,8 @@ function SWEP:MoveUnits()
         else
             k:SetNetVar("destination", trace.HitPos)
             k:SetLastPosition(trace.HitPos)
-            k:SetSchedule(SCHED_NPC_FREEZE)
-
-            timer.Simple(1 / 3, function()
-                if not ( IsValid(k) ) then
-                    return
-                end
-
-                k:SetSchedule(bShift and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
-                k:SetNetVar("walking", bShift)
-            end)
+            k:SetSchedule(bShift and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
+            k:SetNetVar("walking", bShift)
         end
 
         local effectdata = EffectData()
@@ -225,6 +249,43 @@ function SWEP:DrawHUD()
     end
 end
 
+hook.Add("PostDrawTranslucentRenderables", "MinervaRTS.Selector", function()
+    local ply = LocalPlayer()
+    if not ( IsValid(ply) ) then
+        return
+    end
+
+    local weapon = ply:GetActiveWeapon()
+    if not ( IsValid(weapon) ) then
+        return
+    end
+
+    if not ( weapon:GetClass() == "minerva_rts_selector" ) then
+        return
+    end
+
+    local dragging = weapon:GetNetVar("dragging")
+    if ( dragging ) then
+        local aimPos = util.TraceLine({
+            start = ply:EyePos(),
+            endpos = ply:EyePos() + ply:GetAimVector() * 100,
+            filter = ply
+        }).HitPos
+
+        local center, min, max = minerva:GetBounds(dragging, aimPos)
+
+        render.DrawWireframeBox(center, angle_zero, min, max, color_white)
+
+        for k, v in pairs(ents.FindInBox(dragging, aimPos)) do
+            if not ( v:IsNPC() ) then
+                continue
+            end
+
+            minerva.outline.Add(v, color_white, 0)
+        end
+    end
+end)
+
 local nextThink = 0
 hook.Add("Tick", "MinervaRTS.Selector", function()
     for k, v in player.Iterator() do
@@ -237,7 +298,33 @@ hook.Add("Tick", "MinervaRTS.Selector", function()
             continue
         end
 
-        if ( v:KeyDownLast(IN_ATTACK) and not v:KeyDown(IN_ATTACK) ) then
+        local traceEnt = v:GetEyeTrace().Entity
+        if ( v:KeyDown(IN_ATTACK) and not weapon:GetNetVar("dragging") and not IsValid(traceEnt) ) then
+            if ( SERVER ) then
+                weapon:SetNetVar("dragging", v:GetEyeTrace().HitPos)
+            end
+        elseif ( not v:KeyDown(IN_ATTACK) and weapon:GetNetVar("dragging") ) then
+            local foundEnts = {}
+            local aimPos = util.TraceLine({
+                start = v:EyePos(),
+                endpos = v:EyePos() + v:GetAimVector() * 100,
+                filter = v
+            }).HitPos
+
+            for k, v in pairs(ents.FindInBox(weapon:GetNetVar("dragging"), aimPos)) do
+                if not ( v:IsNPC() ) then
+                    continue
+                end
+
+                table.insert(foundEnts, v)
+            end
+
+            weapon:SelectUnits(foundEnts)
+
+            if ( SERVER ) then
+                weapon:SetNetVar("dragging", nil)
+            end
+        elseif ( v:KeyDownLast(IN_ATTACK) and not v:KeyDown(IN_ATTACK) and IsValid(traceEnt) ) then
             weapon:SelectUnit()
         end
 

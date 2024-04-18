@@ -119,3 +119,11 @@ function minerva:FindPlayer(identifier)
         return player.GetByID(identifier)
     end
 end
+
+function minerva:GetBounds(startpos, endpos)
+	local center = LerpVector(0.5, startpos, endpos)
+	local min = WorldToLocal(startpos, angle_zero, center, angle_zero)
+	local max = WorldToLocal(endpos, angle_zero, center, angle_zero)
+
+    return center, min, max
+end
