@@ -1,14 +1,11 @@
-local DeriveGamemode = DeriveGamemode
-local AddCSLuaFile = AddCSLuaFile
-local include = include
+DeriveGamemode("sandbox")
 
-DeriveGamemode("base")
-
-minerva = minerva or {}
+minerva = minerva or {util = {}, meta = {}}
 
 AddCSLuaFile("cl_init.lua")
-AddCSLuaFile("core/sh_util.lua")
-AddCSLuaFile("shared.lua")
 
+AddCSLuaFile("core/sh_util.lua")
 include("core/sh_util.lua")
+
+AddCSLuaFile("shared.lua")
 include("shared.lua")

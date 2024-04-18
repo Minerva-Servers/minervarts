@@ -1,1 +1,0 @@
-minerva.fogOfWar = minerva.fogOfWar or {}

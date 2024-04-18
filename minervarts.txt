@@ -1,7 +1,7 @@
-"minervawars"
+"minervarts"
 {
 	"base" 			"sandbox"
-	"title"			"Minerva Wars"
+	"title"			"Minerva Real Time Strategy"
 	"author" 		"Riggs"
 	"menusystem"	"1"
 }

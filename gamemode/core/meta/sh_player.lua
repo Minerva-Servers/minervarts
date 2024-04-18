@@ -1,12 +1,3 @@
-local FindMetaTable = FindMetaTable
-local util_TraceEntity = util.TraceEntity
+local PLAYER = FindMetaTable("Player")
 
-local META = FindMetaTable("Player")
-
-function META:IsStuck()
-    return util_TraceEntity({
-        start = self:GetPos(),
-        endpos = self:GetPos(),
-        filter = self
-    }, self).StartSolid
-end
+PLAYER.SteamName = PLAYER.SteamName or PLAYER.Name

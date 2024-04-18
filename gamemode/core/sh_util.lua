@@ -1,89 +1,121 @@
-local error = error
-local include = include
-local AddCSLuaFile = AddCSLuaFile
-local ipairs = ipairs
-local file_Find = file.Find
-local minerva = minerva
-local Material = Material
-local player_GetAll = player.GetAll
+function minerva:SendChatText(ply, ...)
+    if not ( ply ) then
+        return
+    end
 
-minerva.util = minerva.util or {}
-
-function minerva.util.Include(fileName, realm)
-	if not ( fileName ) then
-		error("[Gmod Wars] No file name specified for including.")
-	end
-	
-	if ( ( realm == "server" or fileName:find("sv_") ) and SERVER ) then
-		return include(fileName)
-	elseif ( realm == "shared" or fileName:find("shared.lua") or fileName:find("sh_")) then
-		if ( SERVER) then
-			AddCSLuaFile(fileName)
-		end
-
-		return include(fileName)
-	elseif ( realm == "client" or fileName:find("cl_") ) then
-		if ( SERVER ) then
-			AddCSLuaFile(fileName)
-		else
-			return include(fileName)
-		end
-	end
+    if ( SERVER ) then
+        net.Start("MinervaChatText")
+            net.WriteTable({...})
+        net.Send(ply)
+    else
+        chat.AddText(...)
+    end
 end
 
-function minerva.util.IncludeDirectory(directory, bFromLua)
-	local baseDir = "minervawars/gamemode/"
+function minerva:PrintMessage(text, ply)
+    if ( text == nil or text == "" ) then
+        return
+    end
 
-	for _, v in ipairs(file_Find((bFromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
-		minerva.util.Include(directory.."/"..v)
-	end
+    MsgC(Color(50, 125, 250), "[Minerva] ", Color(250, 125, 50), "[RTS] ", Color(150, 150, 150), text, "\n")
+
+    if ( IsValid(ply) ) then
+        self:SendChatText(ply, Color(50, 125, 250), "[Minerva] ", Color(250, 125, 50), "[RTS] ", Color(150, 150, 150), text)
+    end
 end
 
-minerva.util.materials = minerva.util.materials or {}
+function minerva:PrintError(text, ply)
+    if ( text == nil or text == "" ) then
+        return
+    end
 
-function minerva.util.GetMaterial(mat, ...)
-	if not ( minerva.util.materials[mat] ) then
-		minerva.util.materials[mat] = Material(mat, ...)
-	end
+    MsgC(Color(50, 125, 250), "[Minerva] ", Color(250, 125, 50), "[RTS] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text, "\n")
 
-	return minerva.util.materials[mat]
+    if ( IsValid(ply) ) then
+        self:SendChatText(ply, Color(50, 125, 250), "[Minerva] ", Color(250, 125, 50), "[RTS] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text)
+    end
 end
 
-function minerva.util.GetPlayerByName(find, bMultiple)
-	bMultiple = bMultiple and true or false
+function minerva:PrintWarning(text, ply)
+    if ( text == nil or text == "" ) then
+        return
+    end
 
-	local find_lower = find:lower()
+    MsgC(Color(50, 125, 250), "[Minerva] ", Color(250, 125, 50), "[RTS] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text, "\n")
 
-	local players = {}
+    if ( IsValid(ply) ) then
+        self:SendChatText(ply, Color(50, 125, 250), "[Minerva] ", Color(250, 125, 50), "[RTS] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text)
+    end
+end
 
-	for i, v in ipairs(player_GetAll()) do
-		local pname = v:GetName()
-		local pname_lower = pname:lower()
+function minerva:LoadFile(path, realm)
+    if not ( path or file.Exists("minervarts" .. "/gamemode/" .. path, "LUA") ) then
+        minerva:PrintError("Failed to load file " .. path)
+        return
+    end
 
-		if ( pname == find ) then
-			players[#players + 1] = v
-			continue
-		end
+    realm = realm or "shared"
+    realm = string.lower(realm)
+    
+    minerva:PrintMessage("Loaded file \"" .. path .. "\".")
 
-		if ( pname:match(find) ) then
-			players[#players + 1] = v
-			continue
-		end
+    if ( realm == "server" or string.find(path, "sv_") and SERVER ) then
+        return include(path)
+    elseif ( realm == "client" or string.find(path, "cl_") ) then
+        if ( SERVER ) then
+            AddCSLuaFile(path)
+        else
+            return include(path)
+        end
+    elseif ( realm == "shared" or string.find(path, "sh_") ) then
+        if ( SERVER ) then
+            AddCSLuaFile(path)
+        end
 
-		if ( pname_lower == find_lower ) then
-			players[#players + 1] = v
-			continue
-		end
+        return include(path)
+    end
+end
 
-		if ( pname_lower:match(find_lower) ) then
-			players[#players + 1 ] = v
-			continue
-		end
-	end
+function minerva:LoadFolder(directory, bFromLua)
+    local baseDir = "minervarts"
 
-	if ( bMultiple ) then
-		return players
-	end
+    if ( bFromLua ) then
+        baseDir = baseDir
+    else
+        baseDir = baseDir .. "/gamemode/"
+    end
 
-	return players[1]
+    for k, v in ipairs(file.Find(( bFromLua and "" or baseDir ) .. directory .. "/*.lua", "LUA")) do
+        minerva:LoadFile(directory .. "/" .. v)
+        
+        if ( file.IsDir(directory .. "/" .. v, "LUA") ) then
+            minerva:LoadFolder(directory .. "/" .. v, true)
+        end
+    end
+
+    minerva:PrintMessage("Loaded folder \"" .. directory .. "\".")
+
+    return true
+end
+
+function minerva:FindPlayer(identifier)
+    if not ( identifier ) then
+        return
+    end
+
+    if ( type(identifier) == "Player" ) then
+        return identifier
+    end
+
+    if ( type(identifier) == "string" ) then
+        for k, v in player.Iterator() do
+            if ( string.find(string.lower(v:Name()), string.lower(identifier)) ) then
+                return v
+            end
+        end
+    end
+
+    if ( type(identifier) == "number" ) then
+        return player.GetByID(identifier)
+    end
 end

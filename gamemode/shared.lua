@@ -1,20 +1,36 @@
-local FindMetaTable = FindMetaTable
-local minerva = minerva
-
-ENTITY = FindMetaTable("Entity")
-PLAYER = FindMetaTable("Player")
-
-GM.Name = "Minerva Wars"
+GM.Name = "Real Time Strategy"
 GM.Author = "Riggs"
-GM.Description = "A light weight rts gamemode, made during my free time."
+GM.Description = "A real time strategy game mode for Garry's Mod. Created by Riggs for Minerva Servers."
+GM.Version = "Pre-Alpha"
 
-minerva.util.IncludeDirectory("core/derma")
-minerva.util.IncludeDirectory("core/libs")
-minerva.util.IncludeDirectory("core/meta")
-minerva.util.IncludeDirectory("core/hooks")
+minerva:LoadFolder("core/thirdparty")
+minerva:LoadFolder("core/libs")
+minerva:LoadFolder("core/meta")
+minerva:LoadFolder("core/derma")
+minerva:LoadFolder("core/hooks")
+minerva:LoadFolder("core/net")
+minerva:LoadFolder("core/modules")
+
+minerva:LoadFile("core/sh_commands.lua")
 
 function GM:Initialize()
+    minerva:PrintMessage("Initializing gamemode.")
+    minerva:LoadSchema()
+
+    hook.Run("MinervaInitialized")
 end
 
+minerva_reloaded = nil
+
 function GM:OnReloaded()
+    if ( minerva_reloaded ) then
+        return
+    end
+
+    minerva_reloaded = true
+
+    minerva:PrintMessage("Reloading gamemode.")
+    minerva:LoadSchema()
+
+    hook.Run("MinervaReloaded")
 end

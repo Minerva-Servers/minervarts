@@ -1,43 +1,42 @@
-local math_random = math.random
-local timer_Simple = timer.Simple
-local table_Random = table.Random
-local ents_FindByClass = ents.FindByClass
-local util_TraceLine = util.TraceLine
-local Vector = Vector
-local minerva = minerva
-
-function GM:PlayerInitialSpawn(ply)
-    ply:KillSilent()
-
-    // Randomly assign a faction to the player
-    if ( math_random(2) == 1 ) then
-        ply:SetTeam(FACTION_REBELS)
-    else
-        ply:SetTeam(FACTION_COMBINE)
-    end
-
-    timer_Simple(10, function()
-        ply:Respawn()
+function GM:PlayerLoadout(ply)
+    timer.Simple(1 / 3, function()
+        hook.Run("PostPlayerLoadout", ply)
     end)
+
+    return true
 end
 
+function GM:PostPlayerLoadout(ply)
+    ply:SetupHands()
+    ply:StripWeapons()
+    ply:Give("gmod_camera")
+    ply:Give("minerva_rts_selector")
+    ply:SelectWeapon("minerva_rts_selector")
+    ply:SetMoveType(MOVETYPE_NOCLIP)
+    ply:SetNoDraw(true)
+    ply:SetNotSolid(true)
 
-function GM:PlayerSpawn(ply)
-    local spawnPos = table_Random(ents_FindByClass("info_player_start")):GetPos()
-    ply:SetPos(spawnPos)
+    if ( ply:IsAdmin() ) then
+        ply:Give("weapon_physgun")
+        ply:Give("gmod_tool")
+    end
 
-    local trace = util_TraceLine({
-        start = ply:GetPos(),
-        endpos = ply:GetPos() - Vector(0, 0, 1000),
-        mask = MASK_PLAYERSOLID,
-        filter = ply,
-    })
+    ply:SetNetVar("selected", {})
+end
 
-    // Spawn the entity below the player at the hit position
-    minerva.buildings.Create(minerva.factions.Get(ply:Team()).startBuilding, function(ent)
-        ent:SetPos(trace.HitPos)
-        ent:DropToFloor()
+function GM:PlayerNoClip(ply)
+    return false
+end
 
-        ply:SetPos(ent:GetPos() + Vector(0, 0, 2000))
-    end)
+function GM:PlayerUse(ply)
+    local trace = ply:GetEyeTrace()
+    local ent = trace.Entity
+
+    if ( IsValid(ent) ) then
+        return false
+    end
+
+    local selected = ply:GetNetVar("selected", {})
+
+    return false
 end

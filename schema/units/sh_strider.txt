@@ -1,0 +1,160 @@
+// Strider units
+
+// Strider
+local info = {}
+
+info["Base"] = "drgbase_nextbot"
+info["Name"] = "Strider"
+info["Description"] = "A large, heavily armored Combine unit. It is armed with a powerful cannon and is capable of destroying entire buildings."
+info["Category"] = "Combine"
+info["Models"] = {"models/combine_strider.mdl"}
+info["Weapons"] = {"weapon_ar2"}
+info["Health"] = 1500
+info["WalkSpeed"] = 100
+info["RunSpeed"] = 100
+info["CollisionBounds"] = Vector(100, 100, 500)
+
+info["ReachEnemyRange"] = 1024
+info["AvoidEnemyRange"] = 128
+info["AvoidAfraidOfRange"] = 128
+info["WatchAfraidOfRange"] = 1024
+
+info["OnIdleSounds"] = {"NPC_Strider.Idle"}
+info["IdleSoundDelay"] = 60
+info["Footsteps"] = {"npc/strider/strider_step1.wav", "npc/strider/strider_step2.wav", "npc/strider/strider_step3.wav", "npc/strider/strider_step4.wav", "npc/strider/strider_step5.wav", "npc/strider/strider_step6.wav"}
+
+info["WalkAnimation"] = ACT_WALK
+info["RunAnimation"] = ACT_WALK
+info["IdleAnimation"] = ACT_IDLE
+info["JumpAnimation"] = ACT_JUMP
+info["EyeBone"] = "Combine_Strider.Head_Bone"
+info["Omniscient"] = true
+
+function info:CustomInitialize()
+    if ( SERVER ) then
+        self:SetDefaultRelationship(D_HT)
+        self:SetPlayersRelationship(D_HT, 2)
+
+        self:SetPoseParameter("body_height", 500)
+        self:ManipulateBonePosition(0, Vector(0, 0, 100))
+        self:SetNoDraw(true)
+
+        local dummy = ents.Create("prop_dynamic")
+        dummy:SetModel("models/combine_strider.mdl")
+        dummy:SetPos(self:GetPos())
+        dummy:SetAngles(self:GetAngles())
+        dummy:Spawn()
+        dummy:SetParent(self)
+        
+        dummy:SetPoseParameter("body_height", 500)
+        dummy:SetPos(self:GetPos() + Vector(0, 0, 500))
+
+        self:SetNetVar("dummy", dummy)
+
+        self.dummy = dummy
+    end
+end
+
+if ( SERVER ) then
+    function info:CustomThink()
+        if ( self:GetNetVar("destination") ) then
+
+            if ( IsValid(self:GetEnemy()) ) then
+                self:Approach(self:GetNetVar("destination"))
+            else
+                self:MoveTowards(self:GetNetVar("destination"))
+            end
+
+            if ( self:GetPos():Distance(self:GetNetVar("destination")) < 10 ) then
+                self:SetNetVar("destination", nil)
+            end
+
+            if ( self:GetNetVar("patrolling", false) ) then
+                self:SetNetVar("patrolling", false)
+            end
+        end
+
+        local dummy = self:GetNetVar("dummy")
+        if ( IsValid(dummy) ) then
+            dummy:ResetSequence(self:GetSequence())
+        else
+            self:Remove()
+            return
+        end
+
+        if not ( self.nextStep ) then
+            self.nextStep = 0
+        end
+
+        if ( self.nextStep < CurTime() and self:IsMoving() ) then
+            self:EmitSound("NPC_Strider.Footstep")
+            self:EmitSound("NPC_Strider.Whoosh")
+
+            self.nextStep = CurTime() + 1
+        end
+
+        if not ( self.nextFire ) then
+            self.nextFire = 0
+        end
+
+        if ( self.shots and self.shots >= 20 ) then
+            self.shots = 0
+            self.nextFire = CurTime() + 2
+        end
+
+        if ( IsValid(self:GetEnemy()) and self.nextFire < CurTime() ) then
+            if not ( self:IsLineOfSightClear(self:GetEnemy()) ) then
+                self.nextFire = CurTime() + 0.2
+                return
+            end
+
+            local bullet = {}
+            bullet.Num = 1
+            bullet.Src = dummy:GetAttachment(dummy:LookupAttachment("MiniGun")).Pos
+            bullet.Dir = (self:GetEnemy():WorldSpaceCenter() - bullet.Src):GetNormalized()
+            bullet.Spread = Vector(0, 0, 0)
+            bullet.Tracer = 1
+            bullet.TracerName = "StriderTracer"
+            bullet.Force = 5
+            bullet.Damage = 10
+            bullet.AmmoType = "AR2"
+            bullet.Callback = function(attacker, tr, dmginfo)
+                local effectdata = EffectData()
+                effectdata:SetStart(tr.HitPos)
+                effectdata:SetOrigin(tr.HitPos)
+                effectdata:SetScale(1)
+                util.Effect("AR2Impact", effectdata)
+
+                local gunPos = dummy:GetAttachment(dummy:LookupAttachment("MiniGun")).Pos
+
+                local effectdata = EffectData()
+                effectdata:SetStart(gunPos)
+                effectdata:SetOrigin(gunPos)
+                effectdata:SetEntity(dummy)
+                effectdata:SetAttachment(dummy:LookupAttachment("MiniGun"))
+                effectdata:SetScale(1)
+                util.Effect("StriderMuzzleFlash", effectdata)
+
+                local effectdata = EffectData()
+                effectdata:SetStart(gunPos)
+                effectdata:SetOrigin(gunPos)
+                effectdata:SetScale(1)
+                effectdata:SetEntity(dummy)
+                effectdata:SetAttachment(dummy:LookupAttachment("MiniGun"))
+                effectdata:SetNormal(bullet.Dir)
+                util.Effect("StriderTracer", effectdata)
+            end
+    
+            self:FireBullets(bullet)
+            dummy:EmitSound("NPC_Strider.FireMinigun")
+
+            self.shots = ( self.shots or 0 ) + 1
+            self.nextFire = CurTime() + 0.2
+        end
+    end
+
+    function info:OnReachedPatrol() end
+    function info:OnIdle() end
+end
+
+minerva.units:Register(info)
