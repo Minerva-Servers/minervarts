@@ -30,7 +30,7 @@ UNIT_BASE_COMBINE = minerva.units:Register({
     Class = "npc_combine_s",
     Name = "Combine Soldier Base",
     Description = "A template for Combine soldiers.",
-    Category = "Combine",
+    Category = "Combine Overwatch",
     Models = {"models/combine_soldier/lw_combine_soldier.mdl"},
     Health = 200,
 

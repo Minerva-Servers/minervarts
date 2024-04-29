@@ -4,6 +4,6 @@ minerva.modules:Register({
     Author = "Riggs",
 })
 
-minerva.modules:AddFunction("Test", "PlayerSpawn", function(self, ply)
+minerva.modules:AddFunction("test", "PlayerSpawn", function(self, ply)
     print(self, ply)
 end)

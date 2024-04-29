@@ -27,7 +27,6 @@ function minerva.units:Register(info)
 
     local UniqueID = string.lower(string.gsub(info.Name, "%s", "_"))
     UniqueID = "zb_minerva_" .. UniqueID
-    UniqueID = info.UniqueID or UniqueID
 
     if ( ZBaseNPCs and ZBaseNPCs[UniqueID] ) then
         minerva:PrintWarning("Unit " .. info.Name .. " already exists! Overwriting...")
@@ -37,6 +36,7 @@ function minerva.units:Register(info)
     end
 
     info.ZBaseStartFaction = info.ZBaseStartFaction or "neutral"
+    info.UniqueID = UniqueID
 
     ZBaseNPCs[UniqueID] = info
 
@@ -59,16 +59,22 @@ end
 
 function minerva.units:Get(identifier)
     if not ( identifier ) then
-        minerva:PrintError("Attempted to get an invalid unit!")
+        minerva:PrintError("Attempted to get unit with nil identifier!")
         return
     end
 
     if ( istable(identifier) ) then
-        identifier = identifier.Name
+        identifier = identifier.UniqueID
     end
 
     if ( ZBaseNPCs[identifier] ) then
         return ZBaseNPCs[identifier]
+    end
+
+    for k, v in pairs(ZBaseNPCs) do
+        if ( string.find(string.lower(v.UniqueID), string.lower(identifier)) ) then
+            return v
+        end
     end
 
     for k, v in pairs(ZBaseNPCs) do

@@ -1,7 +1,8 @@
 "minervarts"
 {
 	"base" 			"sandbox"
-	"title"			"Minerva Real Time Strategy"
+	"title"			"Minerva: Real Time Strategy"
 	"author" 		"Riggs"
 	"menusystem"	"1"
+	"maps"			"^rts_"
 }

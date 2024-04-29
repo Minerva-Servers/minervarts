@@ -1,5 +1,5 @@
 minerva.commands = minerva.commands or {}
-minerva.commands.stored = {}
+minerva.commands.stored = minerva.commands.stored or {}
 
 function minerva.commands:Register(info)
     if not ( info ) then
@@ -22,13 +22,13 @@ function minerva.commands:Register(info)
     uniqueID = info.uniqueID or uniqueID
 
     if ( minerva.commands.stored[uniqueID] ) then
-        minerva:PrintWarning("Command " .. info.Name .. " already exists! Overwriting...")
+        minerva:PrintWarning("Command \"" .. info.Name .. "\" already exists! Overwriting...")
         minerva.commands.stored[uniqueID] = nil
     end
 
     minerva.commands.stored[uniqueID] = info
 
-    minerva:PrintMessage("Registered " .. info.Name .. " command.")
+    return info
 end
 
 function minerva.commands:Get(identifier)

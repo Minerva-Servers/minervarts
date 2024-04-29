@@ -32,7 +32,7 @@ UNIT_BASE_METROPOLICE = minerva.units:Register({
     Class = "npc_metropolice",
     Name = "Metrocop Base",
     Description = "A template for Metrocops.",
-    Category = "Combine",
+    Category = "Combine Overwatch",
     Models = {"models/police/lw_police.mdl"},
     Health = 100,
 

@@ -31,6 +31,7 @@ function minerva:LoadSchema()
 
     minerva:PrintMessage("Loaded schema " .. SCHEMA.Name)
 
+    minerva.units:LoadFolder("schema/factions")
     minerva.units:LoadFolder("schema/units")
 
     hook.Run("SchemaLoaded", path, SCHEMA)

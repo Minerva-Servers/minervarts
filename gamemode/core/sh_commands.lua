@@ -1,4 +1,6 @@
---/*
+// Commands
+
+/*
 minerva.commands:Register({
     Name = "test",
     AdminOnly = true,
@@ -37,4 +39,4 @@ minerva.commands:Register({
         minerva:PrintMessage(ply:Name() .. " set " .. target:Name() .. "'s health to " .. health)
     end
 })
---*/
+*/

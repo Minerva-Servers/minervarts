@@ -19,6 +19,9 @@ function minerva.modules:Register(info)
         info.Author = "Unknown"
     end
 
+    local uniqueID = string.lower(string.gsub(info.Name, "%s", "_")) 
+    info.UniqueID = uniqueID
+
     for k, v in pairs(info) do
         if ( type(v) == "function" ) then
             minerva_hooks[k] = minerva_hooks[k] or {}
@@ -26,11 +29,11 @@ function minerva.modules:Register(info)
         end
     end
 
-    minerva.modules.stored[info] = info
+    info.Index = table.Count(minerva.modules.stored) + 1
 
-    minerva:PrintMessage("Registered " .. info.Name .. " module.")
+    minerva.modules.stored[info.Index] = info
 
-    return info
+    return info.Index
 end
 
 function minerva.modules:Get(identifier)
@@ -45,6 +48,8 @@ function minerva.modules:Get(identifier)
 
     for k, v in pairs(minerva.modules.stored) do
         if ( string.find(string.lower(v.Name), string.lower(identifier)) ) then
+            return v
+        elseif ( string.find(string.lower(v.UniqueID), string.lower(identifier)) ) then
             return v
         end
     end
@@ -67,7 +72,6 @@ function minerva.modules:AddFunction(module, hook, func)
     end
 
     local moduleInfo = minerva.modules:Get(module)
-
     if not ( moduleInfo ) then
         minerva:PrintError("Attempted to add a function to an invalid module!")
         return
@@ -75,6 +79,26 @@ function minerva.modules:AddFunction(module, hook, func)
 
     minerva_hooks[hook] = minerva_hooks[hook] or {}
     minerva_hooks[hook][moduleInfo] = func
+end
 
-    minerva:PrintMessage("Added function to " .. moduleInfo.Name .. " module.")
+function minerva.modules:LoadFolder(path, bFromLua)
+    local baseDir = engine.ActiveGamemode()
+    baseDir = baseDir .. "/gamemode/"
+
+    // Load modules from the main folder
+    for k, v in ipairs(file.Find(( bFromLua and "" or baseDir ) .. path .. "/*.lua", "LUA")) do
+        minerva:LoadFile(path .. "/" .. v)
+    end
+
+    // Load modules from subfolders
+    local files, folders = file.Find(( bFromLua and "" or baseDir ) .. path .. "/*", "LUA")
+    for k, v in ipairs(folders) do
+        local modulePath = baseDir .. path .. "/" .. v .. "/sh_module.lua"
+
+        if ( file.Exists(modulePath, "LUA") ) then
+            minerva:LoadFile(modulePath, true)
+        end
+    end
+
+    return true
 end
