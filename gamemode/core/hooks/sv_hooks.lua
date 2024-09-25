@@ -123,7 +123,16 @@ function GM:UpdateRelationship(ent1, ent2, relationship)
 end
 
 function GM:UpdateRelationships(ent)
-    if ( !IsValid(ent) ) then return end
+    if ( !IsValid(ent) ) then
+        for k, v in ents.Iterator() do
+            if ( !v:IsNPC() ) then continue end
+
+            hook.Run("UpdateRelationships", v)
+        end
+
+        return
+    end
+
     if ( !ent:IsNPC() ) then return end
 
     for k, v in ents.Iterator() do
@@ -144,11 +153,14 @@ function GM:UpdateRelationships(ent)
 end
 
 function GM:PlayerSpawnedNPC(ply, ent)
+    ent:SetNetVar("owner", ply:SteamID64())
     ent:SetNetVar("team", ply:Team())
     ent:SetNetVar("faction", ply:GetFaction())
     ent:SetSquad()
 
-    hook.Run("UpdateRelationships", ent)
+    timer.Simple(0.1, function()
+        hook.Run("UpdateRelationships")
+    end)
 end
 
 concommand.Add("minerva_set_team", function(ply, cmd, args)
