@@ -16,8 +16,6 @@ function minerva.factions:Register(info)
 
     info.Index = #minerva.factions.stored + 1
 
-    team.SetUp(info.Index, info.Name, info.Color or Color(255, 255, 255))
-
     minerva.factions.stored[info.Index] = info
 
     hook.Run("FactionRegistered", info)
@@ -26,7 +24,7 @@ function minerva.factions:Register(info)
 end
 
 function minerva.factions:Get(identifier)
-    if not ( identifier ) then
+    if ( !identifier ) then
         minerva:PrintError("Attempted to get an invalid faction!")
         return
     end

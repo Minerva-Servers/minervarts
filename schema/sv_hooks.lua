@@ -1,3 +1,3 @@
 function SCHEMA:PlayerSpawn(ply)
-    minerva:PrintMessage("Player " .. ply:SteamName() .. " has spawned.")
+    minerva.util:PrintMessage("Player " .. ply:SteamName() .. " has spawned.")
 end

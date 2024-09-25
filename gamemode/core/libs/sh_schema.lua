@@ -1,40 +1,49 @@
-// @schema loading
+minerva.schema = minerva.schema or {}
 
 SCHEMA = {}
 
-local defaultSchema = {
+local default = {
     Name = "Unknown",
     Description = "No description available.",
     Author = "Unknown",
 }
 
-function minerva:LoadSchema()
-    local path = "minervarts/schema/sh_schema.lua"
+function minerva.schema:LoadSchema()
+    local path = engine.ActiveGamemode() .. "/schema/sh_schema.lua"
     local bSuccess = false
 
+    minerva.util:PrintMessage("Searching for schema...")
+
     if ( file.Exists(path, "LUA") ) then
-        bSuccess = minerva:LoadFolder("minervarts/schema", true)
+        bSuccess = minerva.util:LoadFolder(engine.ActiveGamemode() .. "/schema", true)
     end
 
-    if not ( bSuccess ) then
-        minerva:PrintError("Schema not found!")
+    if ( !bSuccess ) then
+        minerva.util:PrintError("Schema not found!")
         return
+    else
+        minerva.util:PrintMessage("Schema found, loading " .. SCHEMA.Name .. "...")
     end
 
-    hook.Run("SchemaLoad", path)
+    hook.Run("PreSchemaLoad", path, SCHEMA)
 
-    for k, v in pairs(defaultSchema) do
-        if not ( SCHEMA[k] ) then
+    for k, v in pairs(default) do
+        if ( !SCHEMA[k] ) then
             SCHEMA[k] = v
         end
     end
 
-    minerva:PrintMessage("Loaded schema " .. SCHEMA.Name)
+    minerva.hooks:Register("SCHEMA")
+    minerva.modules:LoadFolder(engine.ActiveGamemode() .. "/schema/modules", true)
 
-    minerva.units:LoadFolder("schema/factions")
-    minerva.units:LoadFolder("schema/units")
+    minerva.util:LoadFolder(engine.ActiveGamemode() .. "/schema/attributes", true)
+    minerva.util:LoadFolder(engine.ActiveGamemode() .. "/schema/buildings", true)
+    minerva.util:LoadFolder(engine.ActiveGamemode() .. "/schema/factions", true)
+    minerva.util:LoadFolder(engine.ActiveGamemode() .. "/schema/units", true)
 
-    hook.Run("SchemaLoaded", path, SCHEMA)
+    minerva.util:PrintMessage("Loaded schema " .. SCHEMA.Name)
+
+    hook.Run("PostSchemaLoad", path, SCHEMA)
 
     return true
 end

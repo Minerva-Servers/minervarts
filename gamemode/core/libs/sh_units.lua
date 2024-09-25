@@ -5,17 +5,17 @@ function minerva.units:LoadFolder()
     local bSuccess = false
     
     if ( file.Exists(path, "LUA") ) then
-        bSuccess = minerva:LoadFolder("minervarts/schema/units", true)
+        bSuccess = minerva.util:LoadFolder("minervarts/schema/units", true)
     end
 
-    if not ( bSuccess ) then
+    if ( !bSuccess ) then
         minerva:PrintError("Units not found!")
         return
     end
 
     hook.Run("UnitsLoad", path)
 
-    minerva:PrintMessage("Loaded units.")
+    minerva.util:PrintMessage("Loaded units.")
 
     hook.Run("UnitsLoaded", path)
 
@@ -29,10 +29,10 @@ function minerva.units:Register(info)
     UniqueID = "zb_minerva_" .. UniqueID
 
     if ( ZBaseNPCs and ZBaseNPCs[UniqueID] ) then
-        minerva:PrintWarning("Unit " .. info.Name .. " already exists! Overwriting...")
+        minerva.util:PrintWarning("Unit " .. info.Name .. " already exists! Overwriting...")
         ZBaseNPCs[UniqueID] = nil
     else
-        minerva:PrintMessage("Registered " .. info.Name .. " unit.")
+        minerva.util:PrintMessage("Registered " .. info.Name .. " unit.")
     end
 
     info.ZBaseStartFaction = info.ZBaseStartFaction or "neutral"
@@ -58,8 +58,8 @@ function minerva.units:Register(info)
 end
 
 function minerva.units:Get(identifier)
-    if not ( identifier ) then
-        minerva:PrintError("Attempted to get unit with nil identifier!")
+    if ( !identifier ) then
+        minerva.util:PrintError("Attempted to get unit with nil identifier!")
         return
     end
 

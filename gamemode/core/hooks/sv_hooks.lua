@@ -8,9 +8,7 @@ function GM:PlayerInitialSpawn(ply)
     ply:SetTeam(TEAM_UNASSIGNED)
 
     timer.Simple(1, function()
-        if not ( IsValid(ply) ) then
-            return
-        end
+        if ( !IsValid(ply) ) then return end
 
         ply:KillSilent()
     end)
@@ -29,6 +27,18 @@ end
 function GM:PostPlayerInitialSpawn(ply)
     net.Start("MinervaSetup")
     net.Send(ply)
+
+    timer.Simple(0.1, function()
+        net.Start("MinervaSetup.PopulatePlayers")
+        net.Broadcast()
+    end)
+end
+
+function GM:PlayerDisconnected(ply)
+    timer.Simple(0.1, function()
+        net.Start("MinervaSetup.PopulatePlayers")
+        net.Broadcast()
+    end)
 end
 
 function GM:PlayerSpawn(ply)
@@ -92,3 +102,73 @@ end
 function GM:PlayerDeathThink(ply)
     return false
 end
+
+function GM:PlayerSay(ply, text, teamChat)
+    if ( string.sub(text, 1, 1) == "/" ) then
+        local arguments = string.Explode(" ", string.sub(text, 2))
+        local command = arguments[1]
+        table.remove(arguments, 1)
+
+        minerva.commands:Run(ply, command, arguments)
+
+        return ""
+    end
+end
+
+function GM:UpdateRelationship(ent1, ent2, relationship)
+    if ( !IsValid(ent1) or !IsValid(ent2) ) then return end
+
+    ent1:AddEntityRelationship(ent2, relationship, 99)
+    ent2:AddEntityRelationship(ent1, relationship, 99)
+end
+
+function GM:UpdateRelationships(ent)
+    if ( !IsValid(ent) ) then return end
+    if ( !ent:IsNPC() ) then return end
+
+    for k, v in ents.Iterator() do
+        if ( v == ent ) then continue end
+        if ( !v:IsNPC() ) then continue end
+
+        local disposition = D_HT
+        if ( ent:GetNetVar("team", 0) == v:GetNetVar("team", 0) ) then
+            disposition = D_LI
+        elseif ( ent:GetNetVar("team", 0) == 0 or v:GetNetVar("team", 0) == 0 ) then
+            disposition = D_NU
+        elseif ( ent:GetNetVar("team", 0) == -1 or v:GetNetVar("team", 0) == -1 ) then
+            disposition = D_HT
+        end
+
+        hook.Run("UpdateRelationship", ent, v, disposition)
+    end
+end
+
+function GM:PlayerSpawnedNPC(ply, ent)
+    ent:SetNetVar("team", ply:Team())
+    ent:SetNetVar("faction", ply:GetFaction())
+    ent:SetSquad()
+
+    hook.Run("UpdateRelationships", ent)
+end
+
+concommand.Add("minerva_set_team", function(ply, cmd, args)
+    if ( !IsValid(ply) ) then return end
+
+    local ent = ply:GetEyeTrace().Entity
+    if ( !IsValid(ent) or !ent:IsNPC() ) then return end
+
+    ent:SetNetVar("team", tonumber(args[1]) or 0)
+    ent:SetSquad()
+
+    hook.Run("UpdateRelationships", ent)
+end)
+
+concommand.Add("minerva_set_faction", function(ply, cmd, args)
+    if ( !IsValid(ply) ) then return end
+
+    local ent = ply:GetEyeTrace().Entity
+    if ( !IsValid(ent) or !ent:IsNPC() ) then return end
+
+    ent:SetNetVar("faction", tonumber(args[1]) or 0)
+    ent:SetSquad()
+end)

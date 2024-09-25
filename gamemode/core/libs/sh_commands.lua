@@ -2,50 +2,59 @@ minerva.commands = minerva.commands or {}
 minerva.commands.stored = minerva.commands.stored or {}
 
 function minerva.commands:Register(info)
-    if not ( info ) then
-        minerva:PrintError("Attempted to register an invalid command!")
+    if ( !info ) then
+        minerva.util:PrintError("Attempted to register an invalid command!")
         return
     end
 
-    if not ( info.Name ) then
-        minerva:PrintError("Attempted to register a command with no name!")
+    if ( !info.Name ) then
+        minerva.util:PrintError("Attempted to register a command with no name!")
         return
     end
 
-    if not ( info.Callback ) then
-        minerva:PrintError("Attempted to register a command with no callback!")
+    if ( !info.Callback ) then
+        minerva.util:PrintError("Attempted to register a command with no callback!")
+        return
+    end
+
+    if ( !info.Prefixes ) then
+        minerva.util:PrintError("Attempted to register a command with no prefixes!")
         return
     end
 
     local uniqueID = string.lower(string.gsub(info.Name, "%s", "_"))
-    uniqueID = "minerva_" .. uniqueID
     uniqueID = info.uniqueID or uniqueID
 
-    if ( minerva.commands.stored[uniqueID] ) then
-        minerva:PrintWarning("Command \"" .. info.Name .. "\" already exists! Overwriting...")
-        minerva.commands.stored[uniqueID] = nil
-    end
-
-    minerva.commands.stored[uniqueID] = info
+    self.stored[uniqueID] = info
 
     return info
 end
 
+function minerva.commands:UnRegister(name)
+    self.stored[name] = nil
+end
+
 function minerva.commands:Get(identifier)
-    if not ( identifier ) then
-        minerva:PrintError("Attempted to get an invalid command!")
+    if ( !identifier ) then
+        minerva.util:PrintError("Attempted to get an invalid command!")
         return
     end
 
-    if ( minerva.commands.stored[identifier] ) then
-        return minerva.commands.stored[identifier]
+    if ( self.stored[identifier] ) then
+        return self.stored[identifier]
     end
 
-    for k, v in pairs(minerva.commands.stored) do
-        if ( string.find(string.lower(v.Name), string.lower(identifier)) ) then
-            return v
+    for k, v in pairs(self.stored) do
+        for k2, v2 in pairs(v.Prefixes) do
+            if ( minerva.util:FindString(v2, identifier) ) then
+                return v
+            end
         end
     end
+
+    minerva.util:PrintError("Attempted to get an invalid command!")
+
+    return
 end
 
 if ( CLIENT ) then
@@ -53,50 +62,76 @@ if ( CLIENT ) then
 end
 
 function minerva.commands:Run(ply, command, arguments)
-    if not ( IsValid(ply) ) then
-        minerva:PrintError("Attempted to run a command with no player!")
+    if ( !IsValid(ply) ) then
+        minerva.util:PrintError("Attempted to run a command with no player!")
         return
     end
 
-    if not ( command ) then
-        minerva:PrintError("Attempted to run a command with no command!", ply)
+    if ( !command ) then
+        minerva.util:PrintError("Attempted to run a command with no command!", ply)
         return
     end
 
-    local commandTable = self:Get(command)
-    if not ( commandTable ) then
-        minerva:PrintError("Attempted to run an invalid command!", ply)
+    local info = self:Get(command)
+    if ( !info ) then
+        minerva.util:PrintError("Attempted to run an invalid command!", ply)
         return
     end
 
-    if ( commandTable.AdminOnly and not ply:IsAdmin() ) then
-        minerva:PrintError("Attempted to run an admin-only command!", ply)
+    if ( info.AdminOnly and !ply:IsAdmin() ) then
+        minerva.util:PrintError("Attempted to run an admin-only command!", ply)
         return
     end
 
-    if ( commandTable.SuperAdminOnly and not ply:IsSuperAdmin() ) then
-        minerva:PrintError("Attempted to run a superadmin-only command!", ply)
+    if ( info.SuperAdminOnly and !ply:IsSuperAdmin() ) then
+        minerva.util:PrintError("Attempted to run a superadmin-only command!", ply)
         return
     end
 
-    commandTable.Callback(ply, arguments)
+    info:Callback(ply, arguments)
 end
 
-concommand.Add("minerva_run_command", function(ply, _, arguments)
+concommand.Add("minerva_command_run", function(ply, cmd, arguments)
+    if ( !IsValid(ply) ) then
+        minerva.util:PrintError("Attempted to run a command with no player!")
+        return
+    end
+
     local command = arguments[1]
     table.remove(arguments, 1)
 
     minerva.commands:Run(ply, command, arguments)
+
+    ply.minervaNextCommand = CurTime() + 1
 end)
 
-hook.Add("PlayerSay", "minerva_Commands", function(ply, text)
-    if ( string.sub(text, 1, 1) == "/" ) then
-        local arguments = string.Explode(" ", string.sub(text, 2))
-        local command = arguments[1]
-        table.remove(arguments, 1)
-
-        minerva.commands:Run(ply, command, arguments)
-
-        return ""
+concommand.Add("minerva_command_list", function(ply, cmd, arguments)
+    if ( !IsValid(ply) ) then
+        minerva.util:PrintError("Attempted to list commands with no player!")
+        return
     end
+
+    if ( ply.minervaNextCommand and ply.minervaNextCommand > CurTime() ) then
+        return
+    end
+
+    minerva.util:PrintMessage("Commands:", ply)
+
+    for k, v in pairs(minerva.commands.stored) do
+        if ( v.AdminOnly and !ply:IsAdmin() ) then
+            continue
+        end
+
+        if ( v.SuperAdminOnly and !ply:IsSuperAdmin() ) then
+            continue
+        end
+
+        if ( v.Description ) then
+            minerva.util:PrintMessage("/" .. v.Name .. " - " .. v.Description, ply)
+        else
+            minerva.util:PrintMessage("/" .. v.Name, ply)
+        end
+    end
+
+    ply.minervaNextCommand = CurTime() + 1
 end)

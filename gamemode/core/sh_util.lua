@@ -1,9 +1,7 @@
 // Utility functions
 
-function minerva:SendChatText(ply, ...)
-    if not ( ply ) then
-        return
-    end
+function minerva.util:SendChatText(ply, ...)
+    if ( !IsValid(ply) ) then return end
 
     if ( SERVER ) then
         net.Start("MinervaChatText")
@@ -14,63 +12,57 @@ function minerva:SendChatText(ply, ...)
     end
 end
 
-function minerva:PrintMessage(text, ply)
-    if ( text == nil or text == "" ) then
-        return
-    end
+function minerva.util:PrintMessage(text, ply)
+    if ( text == nil or text == "" ) then return end
 
-    MsgC(Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(150, 150, 150), text, "\n")
+    MsgC(Color(50, 125, 250), "[MINERVA] ", Color(150, 150, 150), text, "\n")
 
     if ( istable(ply) ) then
         for k, v in ipairs(ply) do
-            self:SendChatText(v, Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(150, 150, 150), text)
+            self:SendChatText(v, Color(50, 125, 250), "[MINERVA] ", Color(150, 150, 150), text)
         end
     else
         if ( IsValid(ply) ) then
-            self:SendChatText(ply, Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(150, 150, 150), text)
+            self:SendChatText(ply, Color(50, 125, 250), "[MINERVA] ", Color(150, 150, 150), text)
         end
     end
 end
 
-function minerva:PrintError(text, ply)
-    if ( text == nil or text == "" ) then
-        return
-    end
+function minerva.util:PrintError(text, ply)
+    if ( text == nil or text == "" ) then return end
 
-    MsgC(Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text, "\n")
+    MsgC(Color(50, 125, 250), "[MINERVA] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text, "\n")
 
     if ( istable(ply) ) then
         for k, v in ipairs(ply) do
-            self:SendChatText(v, Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text)
+            self:SendChatText(v, Color(50, 125, 250), "[MINERVA] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text)
         end
     else
         if ( IsValid(ply) ) then
-            self:SendChatText(ply, Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text)
+            self:SendChatText(ply, Color(50, 125, 250), "[MINERVA] ", Color(255, 0, 0), "[ERROR] ", Color(150, 150, 150), text)
         end
     end
 end
 
-function minerva:PrintWarning(text, ply)
-    if ( text == nil or text == "" ) then
-        return
-    end
+function minerva.util:PrintWarning(text, ply)
+    if ( text == nil or text == "" ) then return end
 
-    MsgC(Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text, "\n")
+    MsgC(Color(50, 125, 250), "[MINERVA] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text, "\n")
 
     if ( istable(ply) ) then
         for k, v in ipairs(ply) do
-            self:SendChatText(v, Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text)
+            self:SendChatText(v, Color(50, 125, 250), "[MINERVA] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text)
         end
     else
         if ( IsValid(ply) ) then
-            self:SendChatText(ply, Color(50, 125, 250), "[MINERVA] ", Color(250, 125, 50), "[DEATHMATCH] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text)
+            self:SendChatText(ply, Color(50, 125, 250), "[MINERVA] ", Color(255, 255, 0), "[WARNING] ", Color(150, 150, 150), text)
         end
     end
 end
 
-function minerva:LoadFile(fileName, realm)
-    if not ( fileName ) then
-        minerva:PrintError("Failed to load file " .. fileName .. "!")
+function minerva.util:LoadFile(fileName, realm)
+    if ( !fileName ) then
+        self:PrintError("Failed to load file " .. fileName .. "!")
         return
     end
 
@@ -91,21 +83,38 @@ function minerva:LoadFile(fileName, realm)
     end
 end
 
-function minerva:LoadFolder(directory, bFromLua)
+function minerva.util:LoadFolder(directory, bFromLua)
     local baseDir = engine.ActiveGamemode()
     baseDir = baseDir .. "/gamemode/"
 
     for k, v in ipairs(file.Find(( bFromLua and "" or baseDir ) .. directory .. "/*.lua", "LUA")) do
-        minerva:LoadFile(directory .. "/" .. v)
+        self:LoadFile(directory .. "/" .. v)
     end
 
     return true
 end
 
-function minerva:FindPlayer(identifier)
-    if not ( identifier ) then
-        return
+function minerva.util:FindString(str, find)
+    if ( !str or !find ) then return false end
+
+    return tobool(string.find(string.lower(str), string.lower(find)))
+end
+
+function minerva.util:FindText(txt, find)
+    if ( !txt or !find ) then return end
+
+    local words = string.Explode(" ", txt)
+    for k, v in ipairs(words) do
+        if ( self:FindString(v, find) ) then
+            return true
+        end
     end
+
+    return false
+end
+
+function minerva.util:FindPlayer(identifier)
+    if ( !identifier ) then return end
 
     if ( type(identifier) == "Player" ) then
         return identifier
@@ -113,18 +122,24 @@ function minerva:FindPlayer(identifier)
 
     if ( type(identifier) == "string" ) then
         for k, v in player.Iterator() do
-            if ( string.find(string.lower(v:Name()), string.lower(identifier)) ) then
+            if ( self:FindString(v:Name(), identifier) or self:FindString(v:SteamID(), identifier) or self:FindString(v:SteamID64(), identifier) ) then
                 return v
             end
         end
     end
 
     if ( type(identifier) == "number" ) then
-        return player.GetByID(identifier)
+        return Player(identifier)
+    end
+
+    if ( type(identifier) == "table" ) then
+        for k, v in ipairs(identifier) do
+            return self:FindPlayer(v)
+        end
     end
 end
 
-function minerva:GetBounds(startpos, endpos)
+function minerva.util:GetBounds(startpos, endpos)
 	local center = LerpVector(0.5, startpos, endpos)
 	local min = WorldToLocal(startpos, angle_zero, center, angle_zero)
 	local max = WorldToLocal(endpos, angle_zero, center, angle_zero)
@@ -132,19 +147,19 @@ function minerva:GetBounds(startpos, endpos)
     return center, min, max
 end
 
-function minerva:VectorToColor(vec, alpha)
+function minerva.util:VectorToColor(vec, alpha)
     return Color(vec.x * 255, vec.y * 255, vec.z * 255, alpha or 255)
 end
 
-function minerva:ColorToVector(col)
+function minerva.util:ColorToVector(col)
     return Vector(col.r / 255, col.g / 255, col.b / 255)
 end
 
-function minerva:ColorDim(col, frac)
+function minerva.util:ColorDim(col, frac)
     return Color(col.r * frac, col.g * frac, col.b * frac, col.a)
 end
 
-function minerva:LerpColor(frac, from, to)
+function minerva.util:LerpColor(frac, from, to)
     return Color(
         Lerp(frac, from.r, to.r),
         Lerp(frac, from.g, to.g),
@@ -153,7 +168,10 @@ function minerva:LerpColor(frac, from, to)
     )
 end
 
-function minerva:ColorRandom(min, max)
+function minerva.util:ColorRandom(min, max)
+    min = min or 0
+    max = max or 255
+
     return Color(math.random(min, max), math.random(min, max), math.random(min, max))
 end
 
@@ -161,7 +179,7 @@ if ( CLIENT ) then
     local blur = Material("pp/blurscreen")
     local defaultAmount = 1
     local defaultPasses = 0.1
-    function minerva:DrawBlur(panel, amount, passes)
+    function minerva.util:DrawBlur(panel, amount, passes)
         amount = amount or defaultAmount
         passes = passes or defaultPasses
 
@@ -180,7 +198,7 @@ if ( CLIENT ) then
         end
     end
 
-    function minerva:DrawBlurRect(x, y, w, h, amount, passes)
+    function minerva.util:DrawBlurRect(x, y, w, h, amount, passes)
         amount = amount or defaultAmount
         passes = passes or defaultPasses
 

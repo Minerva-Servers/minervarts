@@ -52,13 +52,13 @@ local DrawTexture	= render_GetScreenEffectTexture(1)
 	2 - Draw if visible
 --]]-------------------------------
 
-function minerva.outline.Add(ents,color,mode)
-	if not ( istable(ents) ) then 
-        ents = {ents} 
-    end	--Support for passing Entity as first argument
-	if ( table_IsEmpty(ents) ) then 
-        return 
-    end		--Do not pass empty tables
+OUTLINE_MODE_ALWAYS = 0
+OUTLINE_MODE_NOT_VISIBLE = 1
+OUTLINE_MODE_VISIBLE = 2
+
+function minerva.outline:Render(ents,color,mode)
+	if ( !istable(ents) ) then ents = {ents} end	--Support for passing Entity as first argument
+	if ( table_IsEmpty(ents) ) then return end		--Do not pass empty tables
 	if ( #List >= 255 ) then return end				--Maximum 255 reference values
 	
 	table_insert(List, {

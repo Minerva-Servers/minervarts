@@ -44,10 +44,7 @@ end
 
 function SWEP:SelectUnit()
     if ( CLIENT ) then return end
-
-    if ( self.nextSelect and CurTime() < self.nextSelect ) then
-        return
-    end
+    if ( self.nextSelect and CurTime() < self.nextSelect ) then return end
 
     local ply = self.Owner
     local trace = ply:GetEyeTrace()
@@ -80,10 +77,7 @@ end
 
 function SWEP:SelectUnits(entities)
     if ( CLIENT ) then return end
-
-    if ( self.nextSelect and CurTime() < self.nextSelect ) then
-        return
-    end
+    if ( self.nextSelect and CurTime() < self.nextSelect ) then return end
 
     local ply = self.Owner
 
@@ -92,15 +86,10 @@ function SWEP:SelectUnits(entities)
 
     local bShift = ply:KeyDown(IN_SPEED)
     local selected = ply:GetNetVar("selected", {})
-
-    if not ( bShift ) then
-        selected = {}
-    end
+    if ( !bShift ) then selected = {} end
 
     for k, v in pairs(entities) do
-        if not ( IsValid(v) ) then
-            continue
-        end
+        if ( !IsValid(v) ) then continue end
 
         selected[v] = true
     end
@@ -118,10 +107,7 @@ local airNPCs = {
 
 function SWEP:MoveUnits()
     if ( CLIENT ) then return end
-
-    if ( self.nextMove and CurTime() < self.nextMove ) then
-        return
-    end
+    if ( self.nextMove and CurTime() < self.nextMove ) then return end
 
     local ply = self.Owner
     local trace = ply:GetEyeTrace()
@@ -132,13 +118,8 @@ function SWEP:MoveUnits()
 
     local bShift = ply:KeyDown(IN_SPEED)
     for k, v in pairs(selected) do
-        if not ( IsValid(k) ) then
-            continue
-        end
-
-        if not ( k:IsNPC() ) then
-            continue
-        end
+        if ( !IsValid(k) ) then continue end
+        if ( !k:IsNPC() ) then continue end
         
         if ( airNPCs[k:GetClass()] ) then
             local pathTrack = ents.Create("path_track")
@@ -149,9 +130,7 @@ function SWEP:MoveUnits()
             k:Fire("FlyToSpecificTrackViaPath", "path_track_" .. pathTrack:EntIndex())
 
             timer.Simple(1, function()
-                if not ( IsValid(pathTrack) ) then
-                    return
-                end
+                if ( !IsValid(pathTrack) ) then return end
 
                 pathTrack:Remove()
             end)
@@ -172,10 +151,7 @@ end
 
 function SWEP:ResetSelection()
     if ( CLIENT ) then return end
-
-    if ( self.nextReload and CurTime() < self.nextReload ) then
-        return
-    end
+    if ( self.nextReload and CurTime() < self.nextReload ) then return end
 
     local ply = self.Owner
     ply:ViewPunch(Angle(-1, 0, 0))
@@ -188,7 +164,7 @@ end
 function SWEP:DrawHUD()
     local ply = LocalPlayer()
 
-    local x, y = ScrW() / 2, ScrH() / 5
+    local x, y = ScrW() / 2, ScrH() / 8
 
     draw.SimpleText("Primary: Select unit", "BudgetLabel", x, y - 100, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText("Primary + Shift: Add to selection", "BudgetLabel", x, y - 80, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -197,15 +173,13 @@ function SWEP:DrawHUD()
     draw.SimpleText("Secondary + Shift: Move selected units (Walk)", "BudgetLabel", x, y - 20, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText("Reload: Deselect all units", "BudgetLabel", x, y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-    x, y = ScrW() / 10, ScrH() / 5 - 100
+    x, y = ScrW() / 10, ScrH() / 8 - 100
     draw.SimpleText("Selected Units", "BudgetLabel", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     local selected = ply:GetNetVar("selected", {})
     local i = 0
 
     for k, v in pairs(selected) do
-        if not ( IsValid(k) ) then
-            continue
-        end
+        if ( !IsValid(k) ) then continue end
 
         local name = k:GetNWString("ZBaseName", "")
         if ( name == "" ) then
@@ -219,7 +193,7 @@ function SWEP:DrawHUD()
     end
     
     local pos = gui.ScreenToVector(gui.MousePos())
-    if not ( vgui.CursorVisible() ) then
+    if ( !vgui.CursorVisible() ) then
         pos = ply:GetAimVector()
     end
 
@@ -231,15 +205,13 @@ function SWEP:DrawHUD()
 
     local ent = trace.Entity
     if ( IsValid(ent) ) then
-        minerva.outline.Add(ent, color_white, 0)
+        minerva.outline:Render(ent, color_white, OUTLINE_MODE_ALWAYS)
     end
 
     local selected = ply:GetNetVar("selected", {})
     local halos = {}
     for k, v in pairs(selected) do
-        if not ( IsValid(k) ) then
-            continue
-        end
+        if ( !IsValid(k) ) then continue end
 
         table.insert(halos, k)
     end
@@ -251,18 +223,12 @@ end
 
 hook.Add("PostDrawTranslucentRenderables", "MinervaRTS.Selector", function()
     local ply = LocalPlayer()
-    if not ( IsValid(ply) ) then
-        return
-    end
+    if ( !IsValid(ply) ) then return end
 
     local weapon = ply:GetActiveWeapon()
-    if not ( IsValid(weapon) ) then
-        return
-    end
+    if ( !IsValid(weapon) ) then return end
 
-    if not ( weapon:GetClass() == "minerva_rts_selector" ) then
-        return
-    end
+    if ( weapon:GetClass() != "minerva_rts_selector" ) then return end
 
     local dragging = weapon:GetNetVar("dragging")
     if ( dragging ) then
@@ -272,16 +238,14 @@ hook.Add("PostDrawTranslucentRenderables", "MinervaRTS.Selector", function()
             filter = ply
         }).HitPos
 
-        local center, min, max = minerva:GetBounds(dragging, aimPos)
+        local center, min, max = minerva.util:GetBounds(dragging, aimPos)
 
         render.DrawWireframeBox(center, angle_zero, min, max, color_white)
 
         for k, v in pairs(ents.FindInBox(dragging, aimPos)) do
-            if not ( v:IsNPC() ) then
-                continue
-            end
+            if ( !v:IsNPC() ) then continue end
 
-            minerva.outline.Add(v, color_white, 0)
+            minerva.outline:Render(v, color_white, OUTLINE_MODE_ALWAYS)
         end
     end
 end)
@@ -290,13 +254,8 @@ local nextThink = 0
 hook.Add("Tick", "MinervaRTS.Selector", function()
     for k, v in player.Iterator() do
         local weapon = v:GetActiveWeapon()
-        if not ( IsValid(weapon) ) then
-            continue
-        end
-
-        if not ( weapon:GetClass() == "minerva_rts_selector" ) then
-            continue
-        end
+        if ( !IsValid(weapon) ) then continue end
+        if ( weapon:GetClass() != "minerva_rts_selector" ) then continue end
 
         local traceEnt = v:GetEyeTrace().Entity
         if ( v:KeyDown(IN_ATTACK) and not weapon:GetNetVar("dragging") and not IsValid(traceEnt) ) then
@@ -312,9 +271,7 @@ hook.Add("Tick", "MinervaRTS.Selector", function()
             }).HitPos
 
             for k, v in pairs(ents.FindInBox(weapon:GetNetVar("dragging"), aimPos)) do
-                if not ( v:IsNPC() ) then
-                    continue
-                end
+                if ( !v:IsNPC() ) then continue end
 
                 table.insert(foundEnts, v)
             end
@@ -337,35 +294,24 @@ hook.Add("Tick", "MinervaRTS.Selector", function()
         end
     end
 
-    if ( CLIENT ) then
-        return
-    end
-
-    if ( nextThink > CurTime() ) then
-        return
-    end
+    if ( CLIENT ) then return end
+    if ( nextThink > CurTime() ) then return end
 
     for k, v in ents.Iterator() do
-        if not ( v:IsNPC() ) then
-            continue
-        end
+        if ( !v:IsNPC() ) then continue end
 
         local destination = v:GetNetVar("destination")
-        if not ( destination ) then
-            continue
-        end
+        if ( !destination ) then continue end
 
         local schedule = v:GetCurrentSchedule()
-        if ( schedule == SCHED_FORCED_GO or schedule == SCHED_FORCED_GO_RUN ) then
-            continue
-        end
+        if ( schedule == SCHED_FORCED_GO or schedule == SCHED_FORCED_GO_RUN ) then continue end
 
         local pos = v:GetPos()
-        local dist = pos:Distance(destination)
-        if ( dist > 256 ) then
+        local dist = pos:DistToSqr(destination)
+        if ( dist > 256 ^ 2 ) then
             v:SetSchedule(v:GetNetVar("walking") and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
         end
     end
 
-    nextThink = CurTime() + 1 / 3
+    nextThink = CurTime() + 0.1
 end)
