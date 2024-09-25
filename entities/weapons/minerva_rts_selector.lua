@@ -65,7 +65,7 @@ function SWEP:SelectUnit()
             if ( bShift ) then
                 selected[ent] = true
             else
-                selected = { [ent] = true }
+                selected = {[ent] = true}
             end
         end
 
@@ -120,6 +120,9 @@ function SWEP:MoveUnits()
     for k, v in pairs(selected) do
         if ( !IsValid(k) ) then continue end
         if ( !k:IsNPC() ) then continue end
+
+        if ( k:GetNetVar("team", 0) != ply:Team() ) then continue end
+        if ( k:GetNetVar("owner", "") != ply:SteamID64() ) then continue end
         
         if ( airNPCs[k:GetClass()] ) then
             local pathTrack = ents.Create("path_track")
@@ -129,11 +132,7 @@ function SWEP:MoveUnits()
 
             k:Fire("FlyToSpecificTrackViaPath", "path_track_" .. pathTrack:EntIndex())
 
-            timer.Simple(1, function()
-                if ( !IsValid(pathTrack) ) then return end
-
-                pathTrack:Remove()
-            end)
+            SafeRemoveEntityDelayed(pathTrack, 1)
         else
             k:SetNetVar("destination", trace.HitPos)
             k:SetLastPosition(trace.HitPos)
@@ -175,6 +174,7 @@ function SWEP:DrawHUD()
 
     x, y = ScrW() / 10, ScrH() / 8 - 100
     draw.SimpleText("Selected Units", "BudgetLabel", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
     local selected = ply:GetNetVar("selected", {})
     local i = 0
 
@@ -191,7 +191,10 @@ function SWEP:DrawHUD()
         i = i + 1
         draw.SimpleText(" - " .. name, "BudgetLabel", x, y + ( i * 20 ), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
-    
+end
+
+hook.Add("PreDrawHalos", "MinervaRTS.Selector", function()
+    local ply = LocalPlayer()
     local pos = gui.ScreenToVector(gui.MousePos())
     if ( !vgui.CursorVisible() ) then
         pos = ply:GetAimVector()
@@ -203,23 +206,26 @@ function SWEP:DrawHUD()
         filter = ply
     })
 
-    local ent = trace.Entity
-    if ( IsValid(ent) ) then
-        minerva.outline:Render(ent, color_white, OUTLINE_MODE_ALWAYS)
-    end
-
     local selected = ply:GetNetVar("selected", {})
-    local halos = {}
-    for k, v in pairs(selected) do
-        if ( !IsValid(k) ) then continue end
+    for k, v in pairs(team.GetAllTeams()) do
+        local ent = trace.Entity
+        if ( IsValid(ent) and ent:GetNetVar("team", 0) == k ) then
+            minerva.outline:Render(ent, team.GetColor(k), OUTLINE_MODE_ALWAYS)
+        end
 
-        table.insert(halos, k)
-    end
+        local halos = {}
+        for k2, v2 in pairs(selected) do
+            if ( !IsValid(k2) ) then continue end
+            if ( k2:GetNetVar("team", 0) != k ) then continue end
 
-    if ( #halos > 0 ) then
-        halo.Add(halos, Color(255, 255, 255), 2, 2, 1, true, true)
+            table.insert(halos, k2)
+        end
+
+        if ( #halos > 0 ) then
+            halo.Add(halos, team.GetColor(k), 2, 2, 1, true, true)
+        end
     end
-end
+end)
 
 hook.Add("PostDrawTranslucentRenderables", "MinervaRTS.Selector", function()
     local ply = LocalPlayer()
@@ -243,9 +249,14 @@ hook.Add("PostDrawTranslucentRenderables", "MinervaRTS.Selector", function()
         render.DrawWireframeBox(center, angle_zero, min, max, color_white)
 
         for k, v in pairs(ents.FindInBox(dragging, aimPos)) do
+            if ( !IsValid(v) ) then continue end
             if ( !v:IsNPC() ) then continue end
 
-            minerva.outline:Render(v, color_white, OUTLINE_MODE_ALWAYS)
+            for k2, v2 in pairs(team.GetAllTeams()) do
+                if ( v:GetNetVar("team", 0) == k2 ) then
+                    minerva.outline:Render(v, team.GetColor(v2), OUTLINE_MODE_ALWAYS)
+                end
+            end
         end
     end
 end)
