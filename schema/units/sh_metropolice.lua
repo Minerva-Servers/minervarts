@@ -61,6 +61,7 @@ UNIT_METROPOLICE = minerva.units:Register({
     Base = UNIT_BASE_METROPOLICE,
     Name = "Metrocop",
     Description = "The Metrocop is a standard unit of the Combien Overwatch Civil Protection.",
+    Category = "Combine Overwatch",
     Weapons = {"weapon_pistol"},
     CanProduce = function(this, ply)
         return false

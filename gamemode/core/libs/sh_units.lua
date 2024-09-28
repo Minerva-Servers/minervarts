@@ -37,12 +37,20 @@ function minerva.units:Register(info)
 
     info.ZBaseStartFaction = info.ZBaseStartFaction or "neutral"
     info.UniqueID = UniqueID
-
-    ZBaseNPCs[UniqueID] = info
+    info.Category = "Minerva Servers - RTS: " .. (info.Category or "Unknown")
 
     if ( info.Base ) then
-        table.Inherit(ZBaseNPCs[UniqueID], self:Get(info.Base))
+        local base = self:Get(info.Base)
+        if ( !base ) then
+            minerva.util:PrintError("Attempted to register building with invalid base!")
+            return
+        end
+
+        info = table.Inherit(info, base)
+        info.Base = nil
     end
+
+    ZBaseNPCs[UniqueID] = info
 
     table.Inherit(ZBaseNPCs[UniqueID], ZBaseNPCs.npc_zbase)
 
