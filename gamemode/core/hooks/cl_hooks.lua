@@ -44,17 +44,31 @@ function GM:LoadFonts()
     })
 end
 
+local lerpFov
 function GM:CalcView(ply, origin, angles, fov)
     local mapData = minerva.maps:Get()
     if ( mapData and mapData.SetupCamera and IsValid(minerva.gui.setup) ) then
         local camera = mapData.SetupCamera
 
+        if ( !lerpFov ) then
+            lerpFov = fov
+        end
+
+        local ft = FrameTime()
+        local time = ft
+
+        lerpFov = Lerp(time, lerpFov, camera.FOV)
+
         local view = {}
         view.origin = camera.Origin
         view.angles = camera.Angles
-        view.fov = camera.FOV
+        view.fov = lerpFov
 
         return view
+    else
+        if ( lerpFov ) then
+            lerpFov = nil
+        end
     end
 end
 

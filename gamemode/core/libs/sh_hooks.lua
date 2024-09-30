@@ -40,5 +40,22 @@ function hook.Call(name, gm, ...)
         end
     end
 
+    local activeGamemode = minerva.gamemodes:GetCurrent()
+    for k, v in pairs(minerva.gamemodes.stored) do
+        if ( activeGamemode != k ) then continue end
+
+        for k2, v2 in pairs(v) do
+            if ( type(v2) == "function" ) then
+                if ( k2 == name ) then
+                    local a, b, c, d, e, f = v2(v, ...)
+
+                    if ( a != nil ) then
+                        return a, b, c, d, e, f
+                    end
+                end
+            end
+        end
+    end
+
     return hook.minervaCall(name, gm, ...)
 end

@@ -7,5 +7,3 @@ team.SetUp(TEAM_1, "Team 1", minerva.util:ColorRandom())
 team.SetUp(TEAM_2, "Team 2", minerva.util:ColorRandom())
 team.SetUp(TEAM_3, "Team 3", minerva.util:ColorRandom())
 team.SetUp(TEAM_4, "Team 4", minerva.util:ColorRandom())
-
-PrintTable(team.GetAllTeams())

@@ -25,6 +25,13 @@ function GM:StartCommand(ply, cmd)
 end
 
 function GM:PostPlayerInitialSpawn(ply)
+    local lobbyOwner = nil
+    if ( #player.GetHumans() == 1 ) then
+        lobbyOwner = ply
+    end
+
+    SetNetVar("lobbyOwner", ply)
+
     net.Start("MinervaSetup")
     net.Send(ply)
 
@@ -35,6 +42,22 @@ function GM:PostPlayerInitialSpawn(ply)
 end
 
 function GM:PlayerDisconnected(ply)
+    local lobbyOwner = GetNetVar("lobbyOwner", NULL)
+    if ( lobbyOwner == ply ) then
+        SetNetVar("lobbyOwner", NULL)
+
+        local players = {}
+        for k, v in ipairs(player.GetHumans()) do
+            if ( v == ply ) then continue end
+
+            table.insert(players, v)
+        end
+
+        if ( #players > 0 ) then
+            SetNetVar("lobbyOwner", players[math.random(1, #players)])
+        end
+    end
+
     timer.Simple(0.1, function()
         net.Start("MinervaSetup.PopulatePlayers")
         net.Broadcast()
@@ -156,10 +179,17 @@ function GM:PlayerSpawnedNPC(ply, ent)
     ent:SetNetVar("owner", ply:SteamID64())
     ent:SetNetVar("team", ply:Team())
     ent:SetNetVar("faction", ply:GetFaction())
-    ent:SetSquad()
+
+    if ( ent.SetSquad ) then
+        ent:SetSquad()
+    end
+
+    if ( ent.SetCurrentWeaponProficiency ) then
+        ent:SetCurrentWeaponProficiency(WEAPON_PROFICIENCY_PERFECT)
+    end
 
     timer.Simple(0.1, function()
-        hook.Run("UpdateRelationships")
+        --hook.Run("UpdateRelationships")
     end)
 end
 

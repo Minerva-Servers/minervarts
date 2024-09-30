@@ -61,8 +61,48 @@ function PANEL:Populate()
 
     self.rightPanel = rightPanel
 
+    local buttons = self:Add("DPanel")
+    buttons:Dock(BOTTOM)
+    buttons:DockMargin(0, 0, padding / 2, 0)
+    buttons:DockPadding(padding / 4, padding / 4, padding / 4, padding / 4)
+    buttons:SetTall(padding)
+    buttons.Paint = function(this, width, height)
+        draw.RoundedBox(8, 0, 0, width, height, Color(50, 50, 50, 150))
+    end
+
+    self.buttons = buttons
+
     self:PopulatePlayers()
     self:PopulateSettings()
+    self:PopulateButtons()
+end
+
+function PANEL:PopulateButtons()
+    local ply = LocalPlayer()
+    local lobbyOwner = GetNetVar("lobbyOwner", NULL)
+    if ( lobbyOwner and lobbyOwner == ply or ply:IsAdmin() ) then
+        local startButton = self.buttons:Add("DButton")
+        startButton:Dock(RIGHT)
+        startButton:DockMargin(padding / 4, 0, 0, 0)
+        startButton:SetText("Start Game")
+        startButton:SetWide(200)
+        startButton.DoClick = function()
+            Derma_Query("Are you sure you want to start the game now?", "Start Game", "Yes", function()
+                net.Start("MinervaSetup.StartGame")
+                net.SendToServer()
+            end, "No", function() end)
+        end
+    end
+
+    local leaveButton = self.buttons:Add("DButton")
+    leaveButton:Dock(RIGHT)
+    leaveButton:SetText("Leave Game")
+    leaveButton:SetWide(200)
+    leaveButton.DoClick = function()
+        Derma_Query("Are you sure you want to leave the game?", "Leave Game", "Yes", function()
+            RunConsoleCommand("disconnect")
+        end, "No", function() end)
+    end
 end
 
 function PANEL:AddPlayerCard(ply, teamID)
@@ -340,14 +380,18 @@ function PANEL:AddSetting(parent, text, value, callback, data)
         comboBox:DockMargin(padding / 2, padding / 4, padding / 2, padding / 4)
 
         for k, v in ipairs(value) do
-            comboBox:AddChoice(v, nil, k == 1)
+            if ( type(v) == "table" ) then
+                comboBox:AddChoice(v[1], v[2], k == 1)
+            else
+                comboBox:AddChoice(v, nil, k == 1)
+            end
         end
 
         comboBox:SetSortItems(false)
 
         comboBox.OnSelect = function(this, index, value, data)
             if ( callback ) then
-                callback(value)
+                callback(value, data)
             end
         end
     elseif ( type(value) == "string" ) then
@@ -377,12 +421,19 @@ function PANEL:PopulateSettingsList()
         decimals = 0
     })
 
-    local gamemodeType = self:AddSetting(self.settingsList, "Gamemode", {
-        "Team Deathmatch",
-        "Free For All",
-        "Overrun",
-        "Sandbox"
-    })
+    local gamemodes = {}
+    for k, v in pairs(minerva.gamemodes:GetAll()) do
+        table.insert(gamemodes, {
+            v.Name,
+            v.Index
+        })
+    end
+
+    local gamemodeType = self:AddSetting(self.settingsList, "Gamemode", gamemodes, function(value, data)
+        net.Start("MinervaSetup.ChangeGamemode")
+            net.WriteUInt(data, 16)
+        net.SendToServer()
+    end)
 end
 
 function PANEL:Think()

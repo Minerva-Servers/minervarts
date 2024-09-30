@@ -7,6 +7,8 @@ util.AddNetworkString("MinervaSetup.KickPlayer")
 util.AddNetworkString("MinervaSetup.JoinTeam")
 util.AddNetworkString("MinervaSetup.ChangeFaction")
 util.AddNetworkString("MinervaSetup.UnassignPlayer")
+util.AddNetworkString("MinervaSetup.StartGame")
+util.AddNetworkString("MinervaSetup.ChangeGamemode")
 
 net.Receive("MinervaSetup.KickPlayer", function(length, ply)
     if ( !ply:IsAdmin() ) then return end
@@ -63,4 +65,20 @@ net.Receive("MinervaSetup.ChangeFaction", function(length, ply)
             net.WriteUInt(factionID, 16)
         net.Broadcast()
     end)
+end)
+
+net.Receive("MinervaSetup.StartGame", function(length, ply)
+    if ( GetNetVar("lobbyOwner", NULL) == ply or ply:IsAdmin() ) then
+        minerva.game:StartGame(ply)
+    else
+        minerva.util:PrintError("You are not the lobby owner.", ply)
+    end
+end)
+
+net.Receive("MinervaSetup.ChangeGamemode", function(length, ply)
+    if ( GetNetVar("lobbyOwner", NULL) == ply or ply:IsAdmin() ) then
+        minerva.gamemodes:SetCurrent(net.ReadUInt(16))
+    else
+        minerva.util:PrintError("You are not the lobby owner.", ply)
+    end
 end)

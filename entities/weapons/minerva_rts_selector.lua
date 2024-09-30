@@ -117,35 +117,32 @@ function SWEP:MoveUnits()
     ply:EmitSound("ambient/machines/keyboard" .. math.random(1, 6) .. "_clicks.wav")
 
     local bShift = ply:KeyDown(IN_SPEED)
+    local amount = 0
     for k, v in pairs(selected) do
         if ( !IsValid(k) ) then continue end
-        if ( !k:IsNPC() ) then continue end
 
         if ( k:GetNetVar("team", 0) != ply:Team() ) then continue end
         if ( k:GetNetVar("owner", "") != ply:SteamID64() ) then continue end
+
+        local pos = trace.HitPos + Vector(math.random(-16, 16) * amount, math.random(-16, 16) * amount, 0)
         
         if ( airNPCs[k:GetClass()] ) then
-            local pathTrack = ents.Create("path_track")
-            pathTrack:SetPos(trace.HitPos + Vector(0, 0, 512))
-            pathTrack:SetName("path_track_" .. pathTrack:EntIndex())
-            pathTrack:Spawn()
-
-            k:Fire("FlyToSpecificTrackViaPath", "path_track_" .. pathTrack:EntIndex())
-
-            SafeRemoveEntityDelayed(pathTrack, 1)
+            minerva.paths:MoveNPC(k, pos)
+        elseif ( k:GetClass() == "prop_vehicle_apc" ) then
+            minerva.paths:MoveNPC(k, pos)
         else
-            k:SetNetVar("destination", trace.HitPos)
-            k:SetLastPosition(trace.HitPos)
-            k:SetSchedule(bShift and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
             k:SetNetVar("walking", bShift)
+            k:SetNetVar("destination", pos)
         end
 
-        local effectdata = EffectData()
-        effectdata:SetOrigin(trace.HitPos)
-        util.Effect("VortDispel", effectdata)
+        amount = amount + 1
     end
 
-    self.nextMove = CurTime() + 1 / 3
+    local effectdata = EffectData()
+    effectdata:SetOrigin(trace.HitPos)
+    util.Effect("VortDispel", effectdata)
+
+    self.nextMove = CurTime() + 1
 end
 
 function SWEP:ResetSelection()
@@ -304,25 +301,4 @@ hook.Add("Tick", "MinervaRTS.Selector", function()
             weapon:ResetSelection()
         end
     end
-
-    if ( CLIENT ) then return end
-    if ( nextThink > CurTime() ) then return end
-
-    for k, v in ents.Iterator() do
-        if ( !v:IsNPC() ) then continue end
-
-        local destination = v:GetNetVar("destination")
-        if ( !destination ) then continue end
-
-        local schedule = v:GetCurrentSchedule()
-        if ( schedule == SCHED_FORCED_GO or schedule == SCHED_FORCED_GO_RUN ) then continue end
-
-        local pos = v:GetPos()
-        local dist = pos:DistToSqr(destination)
-        if ( dist > 256 ^ 2 ) then
-            v:SetSchedule(v:GetNetVar("walking") and SCHED_FORCED_GO or SCHED_FORCED_GO_RUN)
-        end
-    end
-
-    nextThink = CurTime() + 0.1
 end)

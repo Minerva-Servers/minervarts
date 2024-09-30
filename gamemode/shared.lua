@@ -14,9 +14,9 @@ minerva.util:LoadFolder("core/hooks")
 minerva.util:LoadFolder("core/net")
 
 minerva.modules:LoadFolder("core/modules")
-minerva.gamemodes:LoadFolder("core/gamemodes")
 
 function GM:Initialize()
+    minerva.gamemodes:LoadGamemodes()
     minerva.schema:LoadSchema()
     minerva.maps:LoadMaps()
 
@@ -32,6 +32,7 @@ function GM:OnReloaded()
 
     minerva_reloaded = true
 
+    minerva.gamemodes:LoadGamemodes()
     minerva.schema:LoadSchema()
     minerva.maps:LoadMaps()
     
