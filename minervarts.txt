@@ -1,7 +1,7 @@
 "minervarts"
 {
 	"base" 			"sandbox"
-	"title"			"Minerva: Real Time Strategy"
+	"title"			"Minerva Servers - Half-Life 2 RTS"
 	"author" 		"Riggs"
 	"menusystem"	"1"
 	"maps"			"^rts_"
